@@ -1,16 +1,6 @@
 package perozzivittori;
 
 public class BTree {
-
-	protected class InfoBT {
-		protected Object elem;
-		protected Comparable key;
-		protected Node next;
-
-		protected InfoBT(Object e, Comparable k, Node next){
-			elem = e; key = k; this.next = next;
-		}
-	}
 	
 	private static final int t = 4; // t >= 2
 
@@ -18,34 +8,54 @@ public class BTree {
 	private int height;      // height of the B-tree
 	private int n;    
 	
-	private static final class Node {
-        private int m;                             // number of children
-        private InfoBT[] children = new InfoBT[t];   // the array of children
-
-        // create a node with k children
-        private Node(int k) {
-            m = k;
-        }
+	public BTree() {
+        root = new Node();
+        height = 0;
     }
 	
-	public BTree() {
-        root = new Node(0);
-    }
+	public Object search(Node v, Comparable k, int ht) {
+		int i = 0;
+		while(i < v.m && k.compareTo(v.keys[i].key) > 0) i++;
+		if (i < v.m && k.compareTo(v.keys[i].key) == 0) return v.keys[i].elem;
+		else {
+			if(ht == 0) return null;
+			else return search(v.children[i],k,ht-1);
+		}
+	}
+	
+	public boolean insert(Comparable k, Object e) {
+		InfoBT couple = new InfoBT(k,e);
+		int i=0;
+		int ht = height;
+		Node v = root;
+		while (v!=null) {
+			for (i=0; i < v.m ; i++) {
+				if(k.compareTo(v.keys[i].key) < 0) break;
+			}
+			v = v.children[i];
+		}
+		return false;
+	}
+	
+	public boolean delete() {return false;}
+	
+	protected class Node {
+		protected Node father;
+		protected int m;                             			// number of keys
+		protected InfoBT[] keys = new InfoBT[2*t-1];			// array of key-value pairs
+		protected Node[] children = new Node[2*t];   			// array of children
 
-    // internal nodes: only use key and next
-    // external nodes: only use key and value
-    private static class Entry {
-        private Comparable key;
-        private final Object val;
-        private Node next;     // helper field to iterate over array entries
-        public Entry(Comparable key, Object val, Node next) {
-            this.key  = key;
-            this.val  = val;
-            this.next = next;
-        }
+        // create a node
+		protected Node() {m=0;}
     }
-    
-    private static class bo{}
-    
-    
+	
+	protected class InfoBT {
+		protected Object elem;
+		protected Comparable key;
+
+		protected InfoBT(Comparable k, Object e){
+			key = k;
+			elem = e;
+		}
+	}
 }
