@@ -19,10 +19,42 @@ public class BTree {
 		if (i < v.m && k.compareTo(v.keys[i].key) == 0) return v.keys[i].elem;
 		else {
 			if(ht == 0) return null;
-			else return search(v.children[i],k,ht-1);
+			else return search(v.children[i], k, ht-1);
 		}
 	}
 	
+	public void insert(Node v, Comparable k, Object e, int ht) {
+		int i=0;
+		while(i < v.m && k.compareTo(v.keys[i].key) > 0) i++;
+		if(ht == 0)  {
+			if(v.m < 2*t-1 ) {	//not full leaf
+				for (int j=v.m; j > i; j--) v.keys[j] = v.keys[j-1]; // slide operation for empty space for insert in i 
+				v.keys[i] = new InfoBT(k,e);
+				v.m++;
+			} else { //split
+				
+			}
+		} else {
+			insert(v.children[i], k, e, ht - 1);
+		}
+		
+		for (int j=v.m; j > i; j--) v.keys[j] = v.keys[j-1]; // slide operation for empty space for insert in i
+		v.keys[i] = new InfoBT(k,e);
+		v.m++;
+	}
+	
+	private InfoBT split(Node f) {
+		Node tmp = new Node();
+		tmp.father = f.father;
+		f.m = t-1;
+		for (int j=0; j < tmp.m; j++) {
+			tmp.keys[j] = f.keys[j];
+			tmp.children[j] = f.children[j];
+		}
+		for (int j=0; j < t; j++) f.keys[j] = f.keys[t+j];	
+		return f.keys[t-1];
+	}
+		
 	public boolean insert(Comparable k, Object e) {
 		InfoBT couple = new InfoBT(k,e);
 		int i=0;
