@@ -5,5 +5,5 @@ public interface Dizionario<K extends Comparable<K>> {
 
 	public void insert(K key, Object e);
 
-	public void delete(K key);
+	public Object delete(K key);
 }
