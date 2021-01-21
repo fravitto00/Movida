@@ -97,6 +97,7 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
     
 	public Object delete(Node father, int childInd, Node v, K k, int ht) {
 		int pos = 0;
+		Object tmp = null;
 		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++; //research right position
 		if(pos < v.m && eq(k,v.pairs[pos].key)) {
 			if (ht != 0) { // intern node 
@@ -105,10 +106,9 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 			} else { //leaf
 				deleteFromLeaf(father, childInd, v, pos);
 			}
-			return v;
+			tmp = v;
 		}
 		
-		Object tmp = null;
 		if (ht != 0) tmp = delete(v, pos, v.children[pos], k, ht - 1);
 		//else return null;
 		if(v.m < t-1 && father != null) {
