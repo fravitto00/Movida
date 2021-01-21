@@ -6,6 +6,15 @@ import java.util.Scanner;
 import movida.commons.*;
 
 public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
+	public enum Operation{
+		Insert,
+		Search,
+		Delete;
+	}
+	public enum KeyType {
+		Movie,
+		Person;
+	}
 	/**
 	 * alg : enum SortingAlgorithm value
 	 * map : enum MapImplementation value
@@ -42,8 +51,86 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		this.sortA		= null;
 	}
 	/** MovidaCore Methods **/
-	private Object[] Core() {
-		
+	private Object selectMethod(KeyType ktype, Operation op, Comparable key, Object e) {
+		switch(this.map) {
+			case ArrayOrdinato:
+				switch(ktype) {
+					case Movie:
+						switch(op) {
+							case Insert:
+								this.ArrMovie.insert(key, e);
+							case Search:
+								return this.ArrMovie.search(key);
+							case Delete:
+								this.ArrMovie.delete(key);
+							default:
+								System.err.println("select(): default case");
+								System.exit(1);
+								break;
+						}
+						break;
+					case Person:
+						switch(op) {
+							case Insert:
+								this.ArrPerson.insert(key, e);
+							case Search:
+								return this.ArrPerson.search(key);
+							case Delete:
+								this.ArrPerson.delete(key);
+							default:
+								System.err.println("select(): default case");
+								System.exit(1);
+								break;
+						}
+						break;
+					default:
+						System.err.println("select(): default case");
+						System.exit(1);
+						break;
+				}
+				break;
+			case BTree:
+				switch(ktype) {
+				case Movie:
+					switch(op) {
+						case Insert:
+							this.BTMovie.insert(key, e);
+						case Search:
+							return this.BTMovie.search(key);
+						case Delete:
+							this.BTMovie.delete(key);
+						default:
+							System.err.println("select(): default case");
+							System.exit(1);
+							break;
+					}
+					break;
+				case Person:
+					switch(op) {
+						case Insert:
+							this.BTPerson.insert(key, e);
+						case Search:
+							return this.BTPerson.search(key);
+						case Delete:
+							this.BTPerson.delete(key);
+						default:
+							System.err.println("select(): default case");
+							System.exit(1);
+							break;
+					}
+					break;
+				default:
+					System.err.println("select(): default case");
+					System.exit(1);
+					break;
+				}
+				break;
+			default:
+				System.err.println("select(): default case");
+				System.exit(1);
+				break;
+				
+		}
 		return null;
 	}
 	
