@@ -30,7 +30,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	
 	/** MovidaCore CONSTRUCTORS **/
 	public MovidaCore() {
-		inizializeMovidaCore();
+		resetMovidaCore();
 		this.alg = null;
 		this.map = null;
 	}
@@ -41,9 +41,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		}
 		this.alg = a;
 		this.map = m;
-		inizializeMovidaCore();	
+		this.ArrMovie 	= new ArrayOrdinato();
+		this.ArrPerson 	= new ArrayOrdinato();
+		this.BTMovie 	= new BTree();
+		this.BTPerson 	= new BTree();
+		this.sortA		= null;
 	}
-	private void inizializeMovidaCore() {
+	private void resetMovidaCore() {
 		this.ArrMovie 	= null;
 		this.ArrPerson 	= null;
 		this.BTMovie 	= null;
@@ -64,7 +68,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 							case Delete:
 								this.ArrMovie.delete(key);
 							default:
-								System.err.println("select(): default case");
+								System.err.println("selectMethod(): default case");
 								System.exit(1);
 								break;
 						}
@@ -78,13 +82,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 							case Delete:
 								this.ArrPerson.delete(key);
 							default:
-								System.err.println("select(): default case");
+								System.err.println("selectMethod(): default case");
 								System.exit(1);
 								break;
 						}
 						break;
 					default:
-						System.err.println("select(): default case");
+						System.err.println("selectMethod(): default case");
 						System.exit(1);
 						break;
 				}
@@ -100,7 +104,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 						case Delete:
 							this.BTMovie.delete(key);
 						default:
-							System.err.println("select(): default case");
+							System.err.println("selectMethod(): default case");
 							System.exit(1);
 							break;
 					}
@@ -114,19 +118,19 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 						case Delete:
 							this.BTPerson.delete(key);
 						default:
-							System.err.println("select(): default case");
+							System.err.println("selectMethod(): default case");
 							System.exit(1);
 							break;
 					}
 					break;
 				default:
-					System.err.println("select(): default case");
+					System.err.println("selectMethod(): default case");
 					System.exit(1);
 					break;
 				}
 				break;
 			default:
-				System.err.println("select(): default case");
+				System.err.println("selectMethod(): default case");
 				System.exit(1);
 				break;
 				
@@ -163,8 +167,16 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				int votes = Integer.parseInt(s.substring(s.indexOf(':') + 1).trim());
 				
 				Movie movie = new Movie(title, year, votes, cast, director); // Film da inserire nella struttura dati (?)
-				selectMethod(KeyType.Movie, Operation.Insert, votes, movie);
-				selectMethod(KeyType.Person, Operation.Insert, votes, movie);
+				// Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) 
+				selectMethod(KeyType.Movie, Operation.Delete, title, null);
+				selectMethod(KeyType.Movie, Operation.Insert, title, movie);
+				// Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)
+				if(this.getPersonByName(director.getName()) != null)
+					selectMethod(KeyType.Person, Operation.Insert, director.getName(), director);
+				for(Person p: cast) {
+					if(this.getPersonByName(p.getName()) != null)
+						selectMethod(KeyType.Person, Operation.Insert, p.getName(), p);
+				}
 				//System.out.println(newMovie.print()); //stampa record: Movie.print()
 				if(in.hasNext()) in.next(); // skip space between records
 				else break;
@@ -212,19 +224,31 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public void clear() {
-		inizializeMovidaCore();
+		resetMovidaCore();
 	}
 
 	@Override
 	public int countMovies() {
-		// TODO Auto-generated method stub
-		return 0;
+		Object[] Array = null;
+		switch(this.map) {
+		case ArrayOrdinato:
+			Array = this.ArrMovie.toArray();
+		case BTree:
+			Array = this.BTMovie.toArray();
+		}
+		return Array.length;
 	}
 
 	@Override
 	public int countPeople() {
-		// TODO Auto-generated method stub
-		return 0;
+		Object[] Array = null;
+		switch(this.map) {
+		case ArrayOrdinato:
+			Array = this.ArrPerson.toArray();
+		case BTree:
+			Array = this.BTPerson.toArray();
+		}
+		return Array.length;
 	}
 
 	@Override
@@ -276,7 +300,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] searchMoviesByTitle(String title) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
