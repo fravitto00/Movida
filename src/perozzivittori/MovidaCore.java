@@ -162,7 +162,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				s=in.nextLine();
 				int votes = Integer.parseInt(s.substring(s.indexOf(':') + 1).trim());
 				
-				Movie newMovie = new Movie(title, year, votes, cast, director); // Film da inserire nella struttura dati (?)
+				Movie movie = new Movie(title, year, votes, cast, director); // Film da inserire nella struttura dati (?)
+				selectMethod(KeyType.Movie, Operation.Insert, votes, movie);
+				selectMethod(KeyType.Person, Operation.Insert, votes, movie);
 				//System.out.println(newMovie.print()); //stampa record: Movie.print()
 				if(in.hasNext()) in.next(); // skip space between records
 				else break;
@@ -180,8 +182,15 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 			FileOutputStream fos = new FileOutputStream(f);
 	        PrintStream ps = new PrintStream(fos);
 	        
+	        Movie[] Array = null;
+	        switch(this.map) {
+	        	case ArrayOrdinato:
+	        		Array = (Movie[]) ArrMovie.toArray();
+	        	case BTree:
+	        		Array = (Movie[]) BTMovie.toArray();
+	        }
 	        Person[] C = null;
-	        for(Movie m: ArrMovie) { // A = ArrayList<Movie>
+	        for(Movie m: Array) { // A = ArrayList<Movie>
 	        	if(C != null) ps.println();
 	        	String cast = "";	        	
 	        	C = m.getCast();
@@ -203,8 +212,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		inizializeMovidaCore();
 	}
 
 	@Override

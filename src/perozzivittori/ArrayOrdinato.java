@@ -45,7 +45,7 @@ public class ArrayOrdinato implements Comparable{
 		A[i] = new KeyElem(k, e);	
 	}
 	
-	public void delete(Comparable k) {
+	public Object delete(Comparable k) {
 		int i,j;
 		for(i=0; i<A.length; i++) {
 			if(k.equals(A[i].key)) {
@@ -54,10 +54,12 @@ public class ArrayOrdinato implements Comparable{
 				break;
 			}
 		}
-		if(i == A.length) throw new RuntimeException("Occorrenza non trovata");
+		if(i == A.length) 
+			return null;
 		KeyElem[] tmp = new KeyElem[A.length-1];
 		System.arraycopy(A, 0, tmp, 0, tmp.length);
 		A = tmp;
+		return A[i].elem;
 	}
 	
 	public Object search(Comparable k) {
@@ -70,10 +72,10 @@ public class ArrayOrdinato implements Comparable{
 		}
 		return null;
 	}
-	
+	/*
 	public Object getE(int i) {
 		return this.A[i].elem;
-	}
+	}*/
 	
 	public int size() {
 		return A.length;
