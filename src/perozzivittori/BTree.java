@@ -91,11 +91,11 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 		return tmp;	//return new node
 	}
 	
-    public void delete(K k) {
-    	delete(null, 0, root, k, height);
+    public Object delete(K k) {
+    	return delete(null, 0, root, k, height);
     }
     
-	public void delete(Node father, int childInd, Node v, K k, int ht) {
+	public Object delete(Node father, int childInd, Node v, K k, int ht) {
 		int pos = 0;
 		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++; //research right position
 		if(pos < v.m && eq(k,v.pairs[pos].key)) {
@@ -105,13 +105,17 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 			} else { //leaf
 				deleteFromLeaf(father, childInd, v, pos);
 			}
+			return v;
 		}
 		
-		if (ht != 0) delete(v, pos, v.children[pos], k, ht - 1);
+		Object tmp = null;
+		if (ht != 0) tmp = delete(v, pos, v.children[pos], k, ht - 1);
+		//else return null;
 		if(v.m < t-1 && father != null) {
 			System.out.println("Nodo interno invalido");
 			balance(father, childInd, v, t-2);
 		}
+		return tmp;
 	}
 	
 	private InfoBT extractGreatest(Node father, int childInd, Node v, int ht) {

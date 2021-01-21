@@ -221,10 +221,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		//TODO non ritorna un booleano, da controllare
-		return (boolean)selectMethod(KeyType.Movie, Operation.Delete, title, null);
+		Object r = selectMethod(KeyType.Movie, Operation.Delete, title, null); 
+		if (r == null) return false;
+		return true;
 	}
-
+	
 	@Override
 	public Movie getMovieByTitle(String title) {
 		return (Movie)selectMethod(KeyType.Movie, Operation.Search, title, null);
