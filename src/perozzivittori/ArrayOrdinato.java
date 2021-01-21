@@ -71,6 +71,22 @@ public class ArrayOrdinato implements Comparable{
 		return null;
 	}
 	
+	public Object getE(int i) {
+		return this.A[i].elem;
+	}
+	
+	public int size() {
+		return A.length;
+	}
+	
+	public Object[] toArray() {
+		Object[] O = new Object[A.length];
+		for(int i=0; i<A.length; i++) {
+			O[i] = A[i].elem;
+		}
+		return O;
+	}
+	
 	@Override
 	public int compareTo(Object o) {
 		ArrayOrdinato a = (ArrayOrdinato) o;
