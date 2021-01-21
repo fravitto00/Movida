@@ -1,9 +1,9 @@
 package perozzivittori;
 
-public interface Dizionario {
-	public Object search(Comparable key);
+public interface Dizionario<K extends Comparable<K>> {
+	public Object search(K key);
 
-	public void insert(Comparable key, Object e);
+	public void insert(K key, Object e);
 
-	public void delete(Comparable key);
+	public void delete(K key);
 }

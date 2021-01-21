@@ -3,7 +3,7 @@ package perozzivittori;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BTree<K extends Comparable<K>> {
+public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 	
 	private static final int t = 2; // t >= 2
 
@@ -15,6 +15,7 @@ public class BTree<K extends Comparable<K>> {
         height = 0;
     }
 	
+	@Override
 	public Object search(K k) {
 		return search(root, k, height);
 	}
@@ -94,9 +95,8 @@ public class BTree<K extends Comparable<K>> {
     	delete(null, 0, root, k, height);
     }
     
-	public boolean delete(Node father, int childInd, Node v, K k, int ht) {
+	public void delete(Node father, int childInd, Node v, K k, int ht) {
 		int pos = 0;
-		boolean r = false;
 		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++; //research right position
 		if(pos < v.m && eq(k,v.pairs[pos].key)) {
 			if (ht != 0) { // intern node 
@@ -107,12 +107,11 @@ public class BTree<K extends Comparable<K>> {
 			}
 		}
 		
-		if (ht != 0) r = delete(v, pos, v.children[pos], k, ht - 1);
+		if (ht != 0) delete(v, pos, v.children[pos], k, ht - 1);
 		if(v.m < t-1 && father != null) {
 			System.out.println("Nodo interno invalido");
 			balance(father, childInd, v, t-2);
 		}
-		return r;
 	}
 	
 	private InfoBT extractGreatest(Node father, int childInd, Node v, int ht) {
@@ -288,16 +287,11 @@ public class BTree<K extends Comparable<K>> {
     		int i;
     		for(i=0; i < v.m; i++) {
     			if(v.c > i) buildLL(ll, v.children[i]);
-    			//try{
-    				ll.add(v.pairs[i].key);
-    			//}catch(java.lang.NullPointerException e) {
-    			//	System.out.println("v.m NullPointer: " + v.m);
-    			//}
+    			ll.add(v.pairs[i].elem);
     		}
     		
     		//last child
     		if(v.c > i) buildLL(ll, v.children[i]);
-    		//System.out.println("v.m: " + v.m);
     	}
     }
     

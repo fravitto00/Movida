@@ -94,7 +94,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	        PrintStream ps = new PrintStream(fos);
 	        
 	        Person[] C = null;
-	        for(Movie m: A) { // A = ArrayList<Movie>
+	        for(Movie m: ArrMovie) { // A = ArrayList<Movie>
 	        	if(C != null) ps.println();
 	        	String cast = "";	        	
 	        	C = m.getCast();
@@ -134,32 +134,92 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public Movie getMovieByTitle(String title) {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] movies;
+		switch (map) {
+			case BTree: 		movies = (Movie[])BTMovie.toArray();
+								break;
+			case ArrayOrdinato: movies = (Movie[])ArrMovie.toArray();
+								break;
+			default: 			movies = null;
+					 			break;
+		}
+		
+		if (movies==null) return null;
+		
+		boolean found = false;
+		int i;
+		
+		for(i=0; i < movies.length; i++) {
+			if (movies[i].getTitle() == title) {
+				found = true;
+				break;
+			}
+		}
+		
+		if(found)	return movies[i];
+		else		return null;
 	}
 
 	@Override
 	public Person getPersonByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		Person[] people;
+		switch (map) {
+			case BTree: 		people = (Person[])BTMovie.toArray();
+								break;
+			case ArrayOrdinato: people = (Person[])ArrMovie.toArray();
+								break;
+			default: 			people = null;
+					 			break;
+		}
+		
+		if (people==null) return null;
+		
+		boolean found = false;
+		int i;
+		
+		for(i=0; i < people.length; i++) {
+			if (people[i].getName() == name) {
+				found = true;
+				break;
+			}
+		}
+		
+		if(found)	return people[i];
+		else		return null;
 	}
 
 	@Override
 	public Movie[] getAllMovies() {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] movies;
+		switch (map) {
+			case BTree: 		movies = (Movie[])BTMovie.toArray();
+								break;
+			case ArrayOrdinato: movies = (Movie[])ArrMovie.toArray();
+								break;
+			default: 			movies = null;
+					 			break;
+		}
+		return movies;
 	}
 
 	@Override
 	public Person[] getAllPeople() {
-		// TODO Auto-generated method stub
-		return null;
+		Person[] people;
+		switch (map) {
+			case BTree: 		people = (Person[])BTPerson.toArray();
+								break;
+			case ArrayOrdinato: people = (Person[])ArrPerson.toArray();
+								break;
+			default: 			people = null;
+					 			break;
+		}
+		return people;
 	}
 	
 	//IMovidaSearch
