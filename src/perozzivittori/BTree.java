@@ -1,11 +1,14 @@
 package perozzivittori;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class BTree<K extends Comparable<K>> {
 	
 	private static final int t = 2; // t >= 2
 
-	private Node root;       // root of the B-tree
-	private int height;      // height of the B-tree 
+	private Node root;	//root of the B-tree
+	private int height;	//height of the B-tree 	
 	
 	public BTree() {
         root = new Node();
@@ -38,6 +41,7 @@ public class BTree<K extends Comparable<K>> {
 		newRoot.c = 2;
 		height++;
 		root = newRoot;
+		System.out.println("New Root! Ht: " + height);
 	}
 	
 	public Node insert(Node v, K k, Object e, int ht) {
@@ -47,7 +51,7 @@ public class BTree<K extends Comparable<K>> {
 		Node newNode = null;
 		
 		if(ht != 0)  {
-			newNode = insert(v.children[pos], k, e, ht - 1); 				//recursive call to i-th child
+			newNode = insert(v.children[pos], k, e, ht - 1); 				//recursive call to i-th child | returns new split node
 			if (newNode == null) return null;								//the insert was successful
 			tmp.key = v.children[pos].pairs[t-1].key;						//t-th leaf to the father //return f.pairs[t-1] => v.children[i].pairs[t-1] 
 			tmp.elem = v.children[pos].pairs[t-1].elem;   					//tmp will be used to insert t-th leaf from below
@@ -59,8 +63,8 @@ public class BTree<K extends Comparable<K>> {
 		v.pairs[pos] = tmp;													//pair insert
 		v.m++;																//keys counter update
 		if (newNode != null) {												//if the node was split, insert of the new node as a child
-			for (int j=v.c; j > pos; j--) v.children[j] = v.children[j-1];	//slide operation
-			v.children[pos] = newNode;										//newNode insert
+			for (int j=v.c; j > pos+1; j--) v.children[j] = v.children[j-1];	//slide operation
+			v.children[pos+1] = newNode;										//newNode insert
 			v.c++;															//children counter update
 		} 
 		
@@ -92,99 +96,178 @@ public class BTree<K extends Comparable<K>> {
     
 	public boolean delete(Node father, int childInd, Node v, K k, int ht) {
 		int pos = 0;
+		boolean r = false;
 		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++; //research right position
 		if(pos < v.m && eq(k,v.pairs[pos].key)) {
 			if (ht != 0) { // intern node 
-				v.pairs[pos] = extractGreatest(v, pos, v.children[pos], ht); //return v predecessor
+				v.pairs[pos] = extractGreatest(v, pos, v.children[pos], ht - 1); //return v predecessor
+				delete(v, pos, v.children[pos], (K)v.pairs[pos].key, ht - 1);
 			} else { //leaf
 				deleteFromLeaf(father, childInd, v, pos);
 			}
-		} else {
-			if (ht != 0) return delete(v, pos, v.children[pos], k, ht - 1);
-			else return false;
 		}
-		return true;
+		
+		if (ht != 0) r = delete(v, pos, v.children[pos], k, ht - 1);
+		if(v.m < t-1 && father != null) {
+			System.out.println("Nodo interno invalido");
+			balance(father, childInd, v, t-2);
+		}
+		return r;
 	}
 	
 	private InfoBT extractGreatest(Node father, int childInd, Node v, int ht) {
+		
 		if (ht != 0) return extractGreatest(v, v.c-1, v.children[v.c-1], ht - 1);		//v.c-1 equals to the last children (the greatest)
-		InfoBT tmp = v.pairs[v.m-1];												//v.m-1 equals to the last pair (the greatest)
-		deleteFromLeaf(father, childInd, v, v.m-1);
-		return tmp;
+		//System.out.println(v.pairs[v.m-1].key);
+		return v.pairs[v.m-1];															//v.m-1 equals to the last pair (the greatest)
 	}
 	
 	private void deleteFromLeaf(Node father, int childInd, Node leaf, int d) {
 		leaf.pairs[d] = null;
-		//normal delete
 		if (leaf.m > t-1 || father == null) {														
 			leaf.m--;														//pairs counter update
 			for(int i=d; i < leaf.m; i++) leaf.pairs[i] = leaf.pairs[i+1];	//slide operation 
-		} else {											//avoiding NullPointerException
-			Node leftSibling  = null;
-			Node rightSibling = null;
-			if(childInd != 0)			 leftSibling  = father.children[childInd-1];
-			if(childInd != father.c - 1) rightSibling = father.children[childInd+1];
-			
-			//redistribution
-			boolean redistribution = false;
-			
-			//left redistribution
-			if (leftSibling != null && leftSibling.m > t-1 ) {							//redistribution from left sibling
-				for(int i=0; i < d; i++) leaf.pairs[i+1] = leaf.pairs[i];				//slide
-				leaf.pairs[0] = father.pairs[childInd-1];								//pairs swap
-				father.pairs[childInd-1] = leftSibling.pairs[leftSibling.m-1];			//pairs swap
-				leftSibling.pairs[leftSibling.m-1] = null;
-				leftSibling.m--;
-				redistribution = true;
-			}
-			
-			//right redistribution
-			if (rightSibling != null && rightSibling.m > t-1 ) {						//redistribution from right sibling
-				for(int i=leaf.m-1; i > d; i++) leaf.pairs[i-1] = leaf.pairs[i];		//slide
-				leaf.pairs[leaf.m-1] = father.pairs[childInd];							//pairs swap
-				father.pairs[childInd] = rightSibling.pairs[0];							//pairs swap
-				rightSibling.m--;
-				for(int i=0; i < rightSibling.m; i++) leaf.pairs[i] = leaf.pairs[i+1];	//slide operation for sibling
-				redistribution = true;					
-			}
-			if (redistribution) return;
-			
-			// fusion
-			// left fusion
-			if (leftSibling != null) {																			
-				leftSibling.pairs[leftSibling.m] = father.pairs[childInd]; leftSibling.m++;	//pair from father
-				father.pairs[childInd] = null;
-				int k = 0;			
-				for(int i=0; i < leaf.m; i++) {
-					if(i==d) k++;															//double index to avoid making another slide operation on leaf pairs
-					leftSibling.pairs[i+leftSibling.m] = leaf.pairs[k];						//pairs transfer to left sibling
-					k++; 
-				}
-				leftSibling.m += leaf.m - 1;																			
-				for(int i=childInd-1; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
-				for(int i=childInd-1; i < father.c; i++) father.children[i] = father.children[i+1];
-				father.m--; father.c--;
-				
-			//right fusion	
-			} else if (rightSibling != null){
-				for(int i=0; i < leaf.m-1; i++) rightSibling.pairs[i+leaf.m] = rightSibling.pairs[i];	//slide operation on sibling (right)
-				rightSibling.pairs[leaf.m-1] = father.pairs[childInd-1]; rightSibling.m++;
-				father.pairs[childInd-1] = null;
-				int k = 0;
-				for(int i=0; i < leaf.m; i++) {
-					if(i==d) k++;															
-					rightSibling.pairs[i] = leaf.pairs[k];												//pairs transfer to right sibling
-					k++;
-				}
-				rightSibling.m += leaf.m - 1;
-				for(int i=childInd-1; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
-				for(int i=childInd-1; i < father.c; i++) father.children[i] = father.children[i+1];
-				father.m--; father.c--;
-			}
+			printTree();
 		}
+		else balance(father, childInd, leaf, d);
 	}
 	
-	// comparison functions - make Comparable instead of K to avoid casts
+	private void balance(Node father, int childInd, Node v, int d) {
+		Node leftSibling  = null;
+		Node rightSibling = null;
+		if(childInd > 0)			leftSibling  = father.children[childInd-1];
+		if(childInd < father.c - 1)	rightSibling = father.children[childInd+1];
+			
+		//REDISTRIBUTION
+		boolean redistribution = false;
+			
+		//left redistribution
+		if (leftSibling != null && leftSibling.m > t-1 ) {							//redistribution from left sibling
+			for(int i=0; i < d; i++) v.pairs[i+1] = v.pairs[i];						//slide
+			v.pairs[0] = father.pairs[childInd-1];								//pairs swap with left sibling
+			father.pairs[childInd-1] = leftSibling.pairs[leftSibling.m-1];			//pairs swap
+			leftSibling.pairs[leftSibling.m-1] = null;
+			leftSibling.m--;
+			String s= "";
+			if(v.c > 0) {															//internal node (with children)
+				for(int i=0; i < v.c; i++) v.children[i+1] = v.children[i];			//slide children
+				v.c++;
+				leftSibling.c--;
+				v.children[0] = leftSibling.children[v.c];
+				leftSibling.children[v.c] = null;
+				s += "Nodo Interno - ";
+			}
+			redistribution = true;
+			System.out.println(s + "LR");
+		}
+			
+		//right redistribution
+		if (rightSibling != null && rightSibling.m > t-1 ) {						//redistribution from right sibling
+			for(int i=v.m-1; i > d; i--) v.pairs[i-1] = v.pairs[i];					//slide if d isn't last pair
+			if (v.m == 0) v.m++;														//pairs swap with right sibling
+			v.pairs[v.m-1] = father.pairs[childInd];								// v is invalid in case of t=2
+			father.pairs[childInd] = rightSibling.pairs[0];							//pairs swap
+			rightSibling.m--;
+			for(int i=0; i < rightSibling.m; i++) rightSibling.pairs[i] = rightSibling.pairs[i+1];	//slide operation for sibling
+			String s = "";
+			if(v.c > 0) {																			//internal node (with children)
+				v.children[v.c] = rightSibling.children[0]; 													//sottoalbero passing with rotation
+				v.c++;	
+				rightSibling.c--;
+				for(int i=0; i < rightSibling.c; i++) rightSibling.children[i] = rightSibling.children[i+1];	//slide children
+				s += "Nodo Interno - ";
+			}
+			redistribution = true;
+			System.out.println(s + "RR");
+		}
+		if (redistribution) {
+			printTree(root, height);
+			return;
+		}
+		
+		//FUSION
+		boolean fusion = false;
+		
+		//left fusion
+		if (leftSibling != null) {																			
+			leftSibling.pairs[leftSibling.m] = father.pairs[childInd-1];	//pair from father
+			leftSibling.m++;
+			father.pairs[childInd-1] = null;
+			int k = 0;			
+			for(int i=0; i < v.m-1; i++) {
+				if(i==d) k++;															//double index to avoid making another slide operation on v pairs
+				leftSibling.pairs[i+leftSibling.m] = v.pairs[k];						//pairs transfer to left sibling
+				k++; 
+			}
+			int x = 1;
+			if (v.m == 0) x--;
+			leftSibling.m += v.m - x;	
+			
+			//slide on father
+			father.m--; father.c--;
+			for(int i=childInd-1; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
+			for(int i=childInd; i < father.c; i++) father.children[i] = father.children[i+1];
+			
+			String s = "";
+			if(v.c > 0) {																			//internal node (with children)
+				for(int i=0; i < v.c; i++) leftSibling.children[i+leftSibling.c] = v.children[i];	//acquisition children
+				leftSibling.c += v.c;
+				s += "Nodo Interno - ";
+			}
+			fusion = true;
+			System.out.println(s + "LF");
+				
+		//right fusion	
+		} else if (rightSibling != null){
+			if (v.m == 0) v.m++;																//internal node with 0 (t-2) keys
+			for(int i=0; i < v.m; i++) rightSibling.pairs[i+v.m] = rightSibling.pairs[i];	//slide operation on sibling (right)
+			
+			//pair from father
+			rightSibling.pairs[v.m-1] = father.pairs[childInd]; 
+			rightSibling.m++;
+
+			//pairs transfer to right sibling
+			int k = 0;
+			for(int i=0; i < v.m-1; i++) {
+				if(i==d) k++;															
+				rightSibling.pairs[i] = v.pairs[k];
+				k++;
+			}
+			rightSibling.m += v.m - 1;
+			
+			//slide on father
+			father.pairs[childInd] = null;
+			father.m--; father.c--;
+			for(int i=childInd; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
+			for(int i=childInd; i < father.c; i++) father.children[i] = father.children[i+1];
+			String s = "";
+			if(v.c > 0) {																						//internal node (with children)
+				for(int i=0; i < rightSibling.c; i++) rightSibling.children[rightSibling.c-1+v.c-i] = rightSibling.children[rightSibling.c-1-i];	//slide children
+				for(int i=0; i < v.c; i++) rightSibling.children[i] = v.children[i];							//acquisition children
+				rightSibling.c += v.c;
+				s += "Nodo Interno - ";
+				System.out.println("v.child: " + rightSibling.children[1].pairs[0].key);
+			}
+			fusion = true;
+			System.out.println(s + "RF");
+		}
+			
+		//root vanishes
+		if (fusion && father==root && father.m==0) {
+			if(leftSibling != null)	root = leftSibling;
+			if(rightSibling != null)root = rightSibling;
+			height--;
+			System.out.println("New Ht: " + height);
+		}
+			
+		//probably useless
+		if(!redistribution && !fusion) {
+			v.m--;
+			System.out.println("Inutile");
+		}
+		printTree(root, height);
+	}
+	
     private boolean greater(Comparable k1, Comparable k2) {
         return k1.compareTo(k2) > 0;
     }
@@ -192,12 +275,56 @@ public class BTree<K extends Comparable<K>> {
     private boolean eq(Comparable k1, Comparable k2) {
         return k1.compareTo(k2) == 0;
     }    
-    	
+    
+    public Object[] toArray() {
+    	List<Object> ll = new LinkedList<>();
+    	buildLL(ll, root);
+    	if(ll.size() != 0) return ll.toArray();
+    	else return null;
+    }
+    
+    private void buildLL(List<Object> ll, Node v) {
+    	if (v != null) {
+    		int i;
+    		for(i=0; i < v.m; i++) {
+    			if(v.c > i) buildLL(ll, v.children[i]);
+    			//try{
+    				ll.add(v.pairs[i].key);
+    			//}catch(java.lang.NullPointerException e) {
+    			//	System.out.println("v.m NullPointer: " + v.m);
+    			//}
+    		}
+    		
+    		//last child
+    		if(v.c > i) buildLL(ll, v.children[i]);
+    		//System.out.println("v.m: " + v.m);
+    	}
+    }
+    
+    public void printTree() {
+    	printTree(root, height);
+    }
+    
+    private void printTree(Node v, int ht) {
+    	if (v != null) {
+    		String s = "";
+    		if (v==root) s = ", root";
+    		int i;
+    		for(i=0; i < v.m; i++) {
+    			if(v.c > i) printTree(v.children[i], ht - 1);
+    			System.out.println(v.pairs[i].key + " ad " + ht + s);
+    		}
+    		//last child
+    		if(v.c > i) printTree(v.children[i], ht - 1);
+    	}
+    	else System.out.println("do vai");
+    }
+   
 	protected static class Node {
 		protected int m;                             			// number of pairs
 		protected int c;										// number of children
 		protected InfoBT[] pairs = new InfoBT[2*t];				// array of key-value pairs (plus one for operations)
-		protected Node[] children = new Node[2*t];   			// array of children
+		protected Node[] children = new Node[2*t+1];   			// array of children
 
         // create a node
 		protected Node() {m=0;}
