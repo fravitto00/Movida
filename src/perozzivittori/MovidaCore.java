@@ -221,64 +221,18 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		
-		return false;
+		//TODO non ritorna un booleano, da controllare
+		return (boolean)selectMethod(KeyType.Movie, Operation.Delete, title, null);
 	}
 
 	@Override
 	public Movie getMovieByTitle(String title) {
-		Movie[] movies;
-		switch (map) {
-			case BTree: 		movies = (Movie[])BTMovie.toArray();
-								break;
-			case ArrayOrdinato: movies = (Movie[])ArrMovie.toArray();
-								break;
-			default: 			movies = null;
-					 			break;
-		}
-		
-		if (movies==null) return null;
-		
-		boolean found = false;
-		int i;
-		
-		for(i=0; i < movies.length; i++) {
-			if (movies[i].getTitle() == title) {
-				found = true;
-				break;
-			}
-		}
-		
-		if(found)	return movies[i];
-		else		return null;
+		return (Movie)selectMethod(KeyType.Movie, Operation.Search, title, null);
 	}
 
 	@Override
 	public Person getPersonByName(String name) {
-		Person[] people;
-		switch (map) {
-			case BTree: 		people = (Person[])BTMovie.toArray();
-								break;
-			case ArrayOrdinato: people = (Person[])ArrMovie.toArray();
-								break;
-			default: 			people = null;
-					 			break;
-		}
-		
-		if (people==null) return null;
-		
-		boolean found = false;
-		int i;
-		
-		for(i=0; i < people.length; i++) {
-			if (people[i].getName() == name) {
-				found = true;
-				break;
-			}
-		}
-		
-		if(found)	return people[i];
-		else		return null;
+		return (Person)selectMethod(KeyType.Person, Operation.Search, name, null);
 	}
 
 	@Override
