@@ -1,5 +1,9 @@
 package perozzivittori;
 
-public class Dizionario {
-	//prova narto tero 1312
+public interface Dizionario {
+	public Object search(Comparable key);
+
+	public void insert(Comparable key, Object e);
+
+	public void delete(Comparable key);
 }
