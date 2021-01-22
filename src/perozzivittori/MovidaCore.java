@@ -55,8 +55,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		this.sortA		= null;
 	}
 	/** MovidaCore Methods **/
-	private Object selectMethod(KeyType ktype, Operation op, Comparable key, Object e) {
-		switch(this.map) {
+	private Object selectMethod(MapImplementation m,KeyType ktype, Operation op, Comparable key, Object e) {
+		switch(m) {
 			case ArrayOrdinato:
 				switch(ktype) {
 					case Movie:
@@ -165,20 +165,26 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				//Votes
 				s=in.nextLine();
 				int votes = Integer.parseInt(s.substring(s.indexOf(':') + 1).trim());
-				
-				Movie movie = new Movie(title, year, votes, cast, director); // Film da inserire nella struttura dati (?)
-				// Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) 
-				selectMethod(KeyType.Movie, Operation.Delete, title, null);
-				selectMethod(KeyType.Movie, Operation.Insert, title, movie);
-				// Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)
-				if(this.getPersonByName(director.getName()) != null)
-					selectMethod(KeyType.Person, Operation.Insert, director.getName(), director);
+				// Caricamento record in TUTTE le strutture
+				Movie movie = new Movie(title, year, votes, cast, director); 
+				/** Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) */
+				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, title, null);
+				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Insert, title, movie);
+				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Delete, title, null);
+				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, title, movie);
+				/** Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)*/
+				if(this.getPersonByName(director.getName()) != null) {
+					selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, director.getName(), director);
+					selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, director.getName(), director);
+				}
 				for(Person p: cast) {
-					if(this.getPersonByName(p.getName()) != null)
-						selectMethod(KeyType.Person, Operation.Insert, p.getName(), p);
+					if(this.getPersonByName(p.getName()) != null) {
+						selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, p.getName(), p);
+						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, p.getName(), p);
+					}
 				}
 				//System.out.println(newMovie.print()); //stampa record: Movie.print()
-				if(in.hasNext()) in.next(); // skip space between records
+				if(in.hasNext()) in.next(); // salta la riga vuota tra un record e un altro
 				else break;
 			}
 			in.close();
@@ -253,19 +259,19 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		Object r = selectMethod(KeyType.Movie, Operation.Delete, title, null); 
+		Object r = selectMethod(this.map, KeyType.Movie, Operation.Delete, title, null); 
 		if (r == null) return false;
 		return true;
 	}
 	
 	@Override
 	public Movie getMovieByTitle(String title) {
-		return (Movie)selectMethod(KeyType.Movie, Operation.Search, title, null);
+		return (Movie)selectMethod(this.map, KeyType.Movie, Operation.Search, title, null);
 	}
 
 	@Override
 	public Person getPersonByName(String name) {
-		return (Person)selectMethod(KeyType.Person, Operation.Search, name, null);
+		return (Person)selectMethod(this.map, KeyType.Person, Operation.Search, name, null);
 	}
 
 	@Override
