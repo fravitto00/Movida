@@ -331,6 +331,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	@Override
 	public Movie[] searchMostVotedMovies(Integer N) {
 		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -345,6 +346,43 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	private Object[] toArray(MapImplementation m,KeyType ktype) {
+		Object[] r = null;
+		switch(m) {
+			case ArrayOrdinato:
+				switch(ktype) {
+					case Movie:	r = ArrMovie.toArray();
+								break;
+					case Person:r = ArrPerson.toArray();
+								break;
+					default:
+						System.err.println("selectMethod(): default case");
+						System.exit(1);
+						break;
+				}
+				break;
+			case BTree:
+				switch(ktype) {
+					case Movie:	r = BTMovie.toArray();
+								break;
+					case Person:r = BTPerson.toArray();
+								break;
+					default:
+						System.err.println("selectMethod(): default case");
+						System.exit(1);
+						break;
+				}
+				break;
+			default:
+				System.err.println("selectMethod(): default case");
+				System.exit(1);
+				break;	
+		}
+		
+		return r;
+	}
+	
 
 	// IMovidaConfig
 	
