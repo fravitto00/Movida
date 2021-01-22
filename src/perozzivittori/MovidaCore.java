@@ -194,11 +194,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, Ntitle, movie);
 				/** Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)*/
 				String Nname = null;
+				
 				if(this.getPersonByName(director.getName()) != null) {
 					Nname = this.normalizeString(director.getName());
 					selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, director);
 					selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, director);
 				}
+				
 				for(Person p: cast) {
 					if(this.getPersonByName(p.getName()) != null) {
 						Nname = this.normalizeString(p.getName());
@@ -206,7 +208,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, p);
 					}
 				}
-				//System.out.println(newMovie.print()); //stampa record: Movie.print()
+
 				if(in.hasNext()) in.next(); // salta la riga vuota tra un record e un altro
 				else break;
 			}
@@ -258,35 +260,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public int countMovies() {
-		Object[] Array = null;
-		switch(this.map) {
-		case ArrayOrdinato:
-			Array = this.ArrMovie.toArray();
-			break;
-		case BTree:
-			Array = this.BTMovie.toArray();
-			break;
-		default:
-			Array = null;
-			break;
-		}
+		Object[] Array = this.toArray(KeyType.Movie);
 		return Array.length;
 	}
 
 	@Override
 	public int countPeople() {
-		Object[] Array = null;
-		switch(this.map) {
-		case ArrayOrdinato:
-			Array = this.ArrPerson.toArray();
-			break;
-		case BTree:
-			Array = this.BTPerson.toArray();
-			break;
-		default:
-			Array = null;
-			break;
-		}
+		Object[] Array = this.toArray(KeyType.Person);
 		return Array.length;
 	}
 
@@ -318,29 +298,70 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	}
 	
 	//IMovidaSearch
+	private Movie[] addToArray(Movie[] M, Movie m) {
+		Movie[] returnM = new Movie[M.length+1];
+		System.arraycopy(M, 0, returnM, 0, M.length);
+		returnM[M.length] = m;
+		return returnM;
+	}
 
 	@Override
 	public Movie[] searchMoviesByTitle(String title) {
+		Movie[] returnM = new Movie[0];
+		Movie[] movies = this.getAllMovies();
+		String t = "";
 		
-		return null;
+		for(int i=0; i<movies.length; i++) {
+			t = movies[i].getTitle();
+			if(t.contains(title))
+				returnM = this.addToArray(returnM, movies[i]);
+		}
+		
+		return returnM;
 	}
 
 	@Override
 	public Movie[] searchMoviesInYear(Integer year) {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] returnM = new Movie[0];
+		Movie[] movies = this.getAllMovies();
+		
+		for(int i=0; i<movies.length; i++) {
+			if(movies[i].getYear() == year)
+				returnM = this.addToArray(returnM, movies[i]);
+		}
+		
+		return returnM;
 	}
 
 	@Override
 	public Movie[] searchMoviesDirectedBy(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] returnM = new Movie[0];
+		Movie[] movies = this.getAllMovies();
+		String n = "";
+		
+		for(int i=0; i<movies.length; i++) {
+			n = movies[i].getDirector().getName();
+			if(n.contains(name))
+				returnM = this.addToArray(returnM, movies[i]);
+		}
+		
+		return returnM;
 	}
 
 	@Override
 	public Movie[] searchMoviesStarredBy(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] returnM = new Movie[0];
+		Movie[] movies = this.getAllMovies();
+		String pn = "";
+		
+		for(int i=0; i<movies.length; i++) {
+			for(Person p: movies[i].getCast())
+				pn = p.getName();
+				if(pn.contains(name))
+					returnM = this.addToArray(returnM, movies[i]);
+		}
+		
+		return returnM;
 	}
 
 	@Override
