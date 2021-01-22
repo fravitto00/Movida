@@ -1,11 +1,38 @@
 package perozzivittori;
 
+import movida.commons.SortingAlgorithm;
+
 public class sortingArray<T extends Comparable<T>> {
 	private T[] sortArray;
 	
 	public sortingArray(T[] a) {
-		sortArray = a;
+		this.sortArray = a;
 	}
+	
+	public T[] getA() {
+		return this.sortArray;
+	}
+	
+	/*
+	public void setA(T[] a) {
+		this.sortArray = a;
+	}
+	*/
+	
+	public void sort(SortingAlgorithm alg) {
+		switch (alg) {
+			case SelectionSort:	selectionSort();
+								break;
+								
+			case HeapSort:		heapSort();
+								break;
+								
+			default:			System.err.println("SortingAlgorithm or MapImplementation value: invalid");
+								System.exit(1);
+								break;
+		}
+	}
+	
 	/*** SELECTION SORT ***/
 	public T[] selectionSort() {
 		for (int i=0; i < sortArray.length - 1; i++) {
@@ -26,6 +53,7 @@ public class sortingArray<T extends Comparable<T>> {
 		sortArray[x]	= sortArray[min];
 		sortArray[min]	= tmp;
 	}
+	
 	/*** HEAP SORT ***/
 	public T[] heapSort() {
 		T[] A = (T[]) new Comparable[sortArray.length+1];
