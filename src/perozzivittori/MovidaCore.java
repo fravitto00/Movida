@@ -137,6 +137,24 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		}
 		return null;
 	}
+	private String deleteAccent(String s) {
+		char[] cAcc= "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ".toCharArray();
+		char[] cReg= "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy".toCharArray();
+		char[] c = s.toCharArray();
+		for(int i=0; i<c.length; i++) {
+			for(int j=0; j<cAcc.length; j++) {
+				if(c[i] == cAcc[j])
+					c[i] = cReg[j];
+			}
+		}
+		return String.valueOf(c);
+	}
+	public String normalizeString(String s) { 
+		s = this.deleteAccent(s);
+		s = s.replaceAll("[^\\w]", "").toLowerCase(); 
+		/** elimina tutti i caratteri TRANNE(^) i WORD characters(\w =azAZ19)*/
+		return s;
+	}
 	
 	// IMovidaDB
 	public void loadFromFile(File f) {
@@ -165,22 +183,27 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				//Votes
 				s=in.nextLine();
 				int votes = Integer.parseInt(s.substring(s.indexOf(':') + 1).trim());
+				//Normalizzazione Titolo
+				String Ntitle = this.normalizeString(title);
 				// Caricamento record in TUTTE le strutture
 				Movie movie = new Movie(title, year, votes, cast, director); 
 				/** Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) */
-				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, title, null);
-				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Insert, title, movie);
-				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Delete, title, null);
-				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, title, movie);
+				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, Ntitle, null);
+				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Insert, Ntitle, movie);
+				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Delete, Ntitle, null);
+				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, Ntitle, movie);
 				/** Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)*/
+				String Nname = null;
 				if(this.getPersonByName(director.getName()) != null) {
-					selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, director.getName(), director);
-					selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, director.getName(), director);
+					Nname = this.normalizeString(director.getName());
+					selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, director);
+					selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, director);
 				}
 				for(Person p: cast) {
 					if(this.getPersonByName(p.getName()) != null) {
-						selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, p.getName(), p);
-						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, p.getName(), p);
+						Nname = this.normalizeString(p.getName());
+						selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, p);
+						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, p);
 					}
 				}
 				//System.out.println(newMovie.print()); //stampa record: Movie.print()
@@ -239,8 +262,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		switch(this.map) {
 		case ArrayOrdinato:
 			Array = this.ArrMovie.toArray();
+			break;
 		case BTree:
 			Array = this.BTMovie.toArray();
+			break;
+		default:
+			Array = null;
+			break;
 		}
 		return Array.length;
 	}
@@ -251,8 +279,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		switch(this.map) {
 		case ArrayOrdinato:
 			Array = this.ArrPerson.toArray();
+			break;
 		case BTree:
 			Array = this.BTPerson.toArray();
+			break;
+		default:
+			Array = null;
+			break;
 		}
 		return Array.length;
 	}
