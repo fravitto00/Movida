@@ -138,7 +138,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return null;
 	}
 	private String deleteAccent(String s) {
-		char[] cAcc= "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ".toCharArray();
+		char[] cAcc= "Å Å½Å¡Å¾Å¸Ã€Ã�Ã‚ÃƒÃ„Ã…Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃ�ÃŽÃ�Ã�Ã‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃ�Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã°Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¿".toCharArray();
 		char[] cReg= "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy".toCharArray();
 		char[] c = s.toCharArray();
 		for(int i=0; i<c.length; i++) {
@@ -373,11 +373,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		for (int i=0; i< nMovies; i++) 
 			votes[i] = new SortPairIntMovie(movies[i].getVotes(), movies[i]);
 		
-		sortingArray<SortPairIntMovie> yearsToSort = new sortingArray<SortPairIntMovie>(votes);
+		sortingArray<SortPairIntMovie> votesToSort = new sortingArray<SortPairIntMovie>(votes);
 		
-		yearsToSort.sort(this.alg);
+		votesToSort.sort(this.alg);
 		
-		return buildArray(N, nMovies, yearsToSort.getA());
+		return buildArray(N, nMovies, votesToSort.getA());
 	}
 
 	@Override
@@ -399,7 +399,42 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	@Override
 	public Person[] searchMostActiveActors(Integer N) {
 		// TODO Auto-generated method stub
-		return null;
+		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
+		int nMovies = movies.length;
+		Person[] people = (Person[]) toArray(KeyType.Person);
+		int nPeople = people.length;
+		
+		SortPairIntPerson[] nStarred = new SortPairIntPerson[nPeople];
+		
+		for (int i=0; i< nPeople; i++) 
+			nStarred[i] = new SortPairIntPerson(0, people[i]);
+		
+		for(int i=0; i < nMovies; i++) {
+			Person[] cast = movies[i].getCast();
+			for(int j=0; i < cast.length; i++) {
+				for(int k=0; i < nPeople; i++) {
+					//checks name instead of intere object for bo (optimization?)
+					if (cast[j].getName() == people[k].getName())  nStarred[k].increase();
+				}
+			}
+		}
+		
+		sortingArray<SortPairIntPerson> countersToSort = new sortingArray<SortPairIntPerson>(nStarred);
+		
+		countersToSort.sort(this.alg);
+		nStarred = countersToSort.getA();
+		
+		//return buildArray(N, nMovies, countersToSort.getA());
+		Person[] returnArray = null;
+		if(nPeople >= N)	returnArray = new Person[N];
+		else				returnArray = new Person[nMovies]; N = nMovies;
+		
+		
+		//ordine decrescente (mostRecent e mostVoted)
+		for(int i=0; i < N; i++)
+			returnArray[i] = nStarred[N-1-i].getPerson();
+		
+		return returnArray;
 	}
 	
 	private Movie[] buildArray(Integer N, int nMovies, SortPairIntMovie[] pairedArray) {
@@ -427,6 +462,23 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		public Integer getInt() {return i;}
 		
 		public Movie getMovie() {return m;}
+	}
+	
+	private class SortPairIntPerson implements Comparable<SortPairIntPerson>{
+		Integer i;
+		Person p;
+		
+		public SortPairIntPerson(Integer i, Person p) { this.i=i; this.p=p;}
+		
+		public int compareTo(SortPairIntPerson sp) {
+			return i.compareTo(sp.getInt());
+		}
+		
+		public void increase() {i++;}
+		
+		public Integer getInt() {return i;}
+		
+		public Person getPerson() {return p;}
 	}
 	
 	private Object[] toArray(KeyType ktype) {
