@@ -138,7 +138,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return null;
 	}
 	private String deleteAccent(String s) {
-		char[] cAcc= "Å Å½Å¡Å¾Å¸Ã€Ã�Ã‚ÃƒÃ„Ã…Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃ�ÃŽÃ�Ã�Ã‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃ�Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã°Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¿".toCharArray();
+		char[] cAcc= "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ".toCharArray();
 		char[] cReg= "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy".toCharArray();
 		char[] c = s.toCharArray();
 		for(int i=0; i<c.length; i++) {
@@ -272,19 +272,19 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		Object r = selectMethod(this.map, KeyType.Movie, Operation.Delete, title, null); 
+		Object r = selectMethod(this.map, KeyType.Movie, Operation.Delete, this.normalizeString(title), null); 
 		if (r == null) return false;
 		return true;
 	}
 	
 	@Override
 	public Movie getMovieByTitle(String title) {
-		return (Movie)selectMethod(this.map, KeyType.Movie, Operation.Search, title, null);
+		return (Movie)selectMethod(this.map, KeyType.Movie, Operation.Search, this.normalizeString(title), null);
 	}
 
 	@Override
 	public Person getPersonByName(String name) {
-		return (Person)selectMethod(this.map, KeyType.Person, Operation.Search, name, null);
+		return (Person)selectMethod(this.map, KeyType.Person, Operation.Search, this.normalizeString(name), null);
 	}
 
 	@Override
