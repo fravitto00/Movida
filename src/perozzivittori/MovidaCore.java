@@ -276,30 +276,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] getAllMovies() {
-		Movie[] movies;
-		switch (map) {
-			case BTree: 		movies = (Movie[])BTMovie.toArray();
-								break;
-			case ArrayOrdinato: movies = (Movie[])ArrMovie.toArray();
-								break;
-			default: 			movies = null;
-					 			break;
-		}
-		return movies;
+		return (Movie[]) toArray(KeyType.Person);
 	}
 
 	@Override
 	public Person[] getAllPeople() {
-		Person[] people;
-		switch (map) {
-			case BTree: 		people = (Person[])BTPerson.toArray();
-								break;
-			case ArrayOrdinato: people = (Person[])ArrPerson.toArray();
-								break;
-			default: 			people = null;
-					 			break;
-		}
-		return people;
+		return (Person[]) toArray(KeyType.Person);
 	}
 	
 	//IMovidaSearch
@@ -347,9 +329,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return null;
 	}
 	
-	private Object[] toArray(MapImplementation m,KeyType ktype) {
+	private Object[] toArray(KeyType ktype) {
 		Object[] r = null;
-		switch(m) {
+		switch(this.map) {
 			case ArrayOrdinato:
 				switch(ktype) {
 					case Movie:	r = ArrMovie.toArray();
