@@ -309,30 +309,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] getAllMovies() {
-		Movie[] movies;
-		switch (map) {
-			case BTree: 		movies = (Movie[])BTMovie.toArray();
-								break;
-			case ArrayOrdinato: movies = (Movie[])ArrMovie.toArray();
-								break;
-			default: 			movies = null;
-					 			break;
-		}
-		return movies;
+		return (Movie[]) toArray(KeyType.Person);
 	}
 
 	@Override
 	public Person[] getAllPeople() {
-		Person[] people;
-		switch (map) {
-			case BTree: 		people = (Person[])BTPerson.toArray();
-								break;
-			case ArrayOrdinato: people = (Person[])ArrPerson.toArray();
-								break;
-			default: 			people = null;
-					 			break;
-		}
-		return people;
+		return (Person[]) toArray(KeyType.Person);
 	}
 	
 	//IMovidaSearch
@@ -363,14 +345,34 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] searchMostVotedMovies(Integer N) {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
+		int nMovies = movies.length;
+		SortPairIntMovie[] votes = new SortPairIntMovie[nMovies];
+		
+		for (int i=0; i< nMovies; i++) 
+			votes[i] = new SortPairIntMovie(movies[i].getVotes(), movies[i]);
+		
+		sortingArray<SortPairIntMovie> yearsToSort = new sortingArray<SortPairIntMovie>(votes);
+		
+		yearsToSort.sort(this.alg);
+		
+		return buildArray(N, nMovies, yearsToSort.getA());
 	}
 
 	@Override
 	public Movie[] searchMostRecentMovies(Integer N) {
-		// TODO Auto-generated method stub
-		return null;
+		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
+		int nMovies = movies.length;
+		SortPairIntMovie[] years = new SortPairIntMovie[nMovies];
+		
+		for (int i=0; i< nMovies; i++) 
+			years[i] = new SortPairIntMovie(movies[i].getYear(), movies[i]);
+		
+		sortingArray<SortPairIntMovie> yearsToSort = new sortingArray<SortPairIntMovie>(years);
+		
+		yearsToSort.sort(this.alg);
+		
+		return buildArray(N, nMovies, yearsToSort.getA());
 	}
 
 	@Override
@@ -378,6 +380,70 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	private Movie[] buildArray(Integer N, int nMovies, SortPairIntMovie[] pairedArray) {
+		Movie[] returnArray = null;
+		if(nMovies >= N)	returnArray = new Movie[N];
+		else				returnArray = new Movie[nMovies]; N = nMovies;
+		
+		//ordine decrescente (mostRecent e mostVoted)
+		for(int i=0; i < N; i++)
+			returnArray[i] = pairedArray[N-1-i].getMovie();
+		
+		return returnArray;
+	}
+	
+	private class SortPairIntMovie implements Comparable<SortPairIntMovie>{
+		Integer i;
+		Movie m;
+		
+		public SortPairIntMovie(Integer i, Movie m) { this.i=i; this.m=m;}
+		
+		public int compareTo(SortPairIntMovie sp) {
+			return i.compareTo(sp.getInt());
+		}
+		
+		public Integer getInt() {return i;}
+		
+		public Movie getMovie() {return m;}
+	}
+	
+	private Object[] toArray(KeyType ktype) {
+		Object[] r = null;
+		switch(this.map) {
+			case ArrayOrdinato:
+				switch(ktype) {
+					case Movie:	r = ArrMovie.toArray();
+								break;
+					case Person:r = ArrPerson.toArray();
+								break;
+					default:
+						System.err.println("selectMethod(): default case");
+						System.exit(1);
+						break;
+				}
+				break;
+			case BTree:
+				switch(ktype) {
+					case Movie:	r = BTMovie.toArray();
+								break;
+					case Person:r = BTPerson.toArray();
+								break;
+					default:
+						System.err.println("selectMethod(): default case");
+						System.exit(1);
+						break;
+				}
+				break;
+			default:
+				System.err.println("selectMethod(): default case");
+				System.exit(1);
+				break;	
+		}
+		
+		return r;
+	}
+	
 
 	// IMovidaConfig
 	
