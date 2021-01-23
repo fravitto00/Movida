@@ -218,7 +218,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 			FileOutputStream fos = new FileOutputStream(f);
 	        PrintStream ps = new PrintStream(fos);
 	        
-	        Movie[] Array = Movie[].class.cast(this.toArray(KeyType.Movie)); 
+	        Movie[] Array = this.castToMovie(this.toArray(KeyType.Movie)); 
 	        
 	        Person[] C = null;
 	        for(Movie m: Array) { // A = ArrayList<Movie>
@@ -277,12 +277,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] getAllMovies() {
-		return (Movie[]) toArray(KeyType.Person);
+		return castToMovie(toArray(KeyType.Person));
 	}
 
 	@Override
 	public Person[] getAllPeople() {
-		return (Person[]) toArray(KeyType.Person);
+		return castToPerson(toArray(KeyType.Person));
 	}
 	
 	//IMovidaSearch
@@ -354,7 +354,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] searchMostVotedMovies(Integer N) {
-		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
+		Movie[] movies = castToMovie(toArray(KeyType.Movie));
 		int nMovies = movies.length;
 		SortPairIntMovie[] votes = new SortPairIntMovie[nMovies];
 		
@@ -370,7 +370,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] searchMostRecentMovies(Integer N) {
-		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
+		Movie[] movies = castToMovie(toArray(KeyType.Movie));
 		int nMovies = movies.length;
 		SortPairIntMovie[] years = new SortPairIntMovie[nMovies];
 		
@@ -386,9 +386,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Person[] searchMostActiveActors(Integer N) {
-		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
+		Movie[] movies = castToMovie(toArray(KeyType.Movie));
 		int nMovies = movies.length;
-		Person[] people = (Person[]) toArray(KeyType.Person);
+		Person[] people = castToPerson(toArray(KeyType.Person));
 		int nPeople = people.length;
 		
 		SortPairIntPerson[] nStarred = new SortPairIntPerson[nPeople];
@@ -539,5 +539,19 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				return false;
 			
 		}
+	}
+	
+	private Movie[] castToMovie(Object[] array) {
+		Movie[] returnArray = new Movie[array.length];
+		for (int i=0; i < array.length; i++)
+			returnArray[i] = (Movie) array[i];
+		return returnArray;
+	}
+	
+	private Person[] castToPerson(Object[] array) {
+		Person[] returnArray = new Person[array.length];
+		for (int i=0; i < array.length; i++)
+			returnArray[i] = (Person) array[i];
+		return returnArray;
 	}
 }
