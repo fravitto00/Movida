@@ -66,11 +66,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 					case Movie:
 						switch(op) {
 							case Insert:
-								this.ArrMovie.insert(key, e);
+								this.ArrMovie.insert(key, e); break;
 							case Search:
 								return this.ArrMovie.search(key);
 							case Delete:
-								this.ArrMovie.delete(key);
+								this.ArrMovie.delete(key);break;
 							default:
 								System.err.println("selectMethod(): default case");
 								System.exit(1);
@@ -80,11 +80,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 					case Person:
 						switch(op) {
 							case Insert:
-								this.ArrPerson.insert(key, e);
+								this.ArrPerson.insert(key, e); break;
 							case Search:
 								return this.ArrPerson.search(key);
 							case Delete:
-								this.ArrPerson.delete(key);
+								this.ArrPerson.delete(key); break;
 							default:
 								System.err.println("selectMethod(): default case");
 								System.exit(1);
@@ -102,11 +102,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				case Movie:
 					switch(op) {
 						case Insert:
-							this.BTMovie.insert(key, e);
+							this.BTMovie.insert(key, e); break;
 						case Search:
 							return this.BTMovie.search(key);
 						case Delete:
-							this.BTMovie.delete(key);
+							this.BTMovie.delete(key); break;
 						default:
 							System.err.println("selectMethod(): default case");
 							System.exit(1);
@@ -116,11 +116,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				case Person:
 					switch(op) {
 						case Insert:
-							this.BTPerson.insert(key, e);
+							this.BTPerson.insert(key, e); break;
 						case Search:
 							return this.BTPerson.search(key);
 						case Delete:
-							this.BTPerson.delete(key);
+							this.BTPerson.delete(key); break;
 						default:
 							System.err.println("selectMethod(): default case");
 							System.exit(1);
@@ -218,14 +218,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 			FileOutputStream fos = new FileOutputStream(f);
 	        PrintStream ps = new PrintStream(fos);
 	        
-	        Movie[] Array = null;
-	        switch(this.map) {
-	        	case ArrayOrdinato:
-	        		Array = (Movie[]) ArrMovie.toArray();
-	        	case BTree:
-	        		Array = (Movie[]) BTMovie.toArray();
-	        	default: break;
-	        }
+	        Movie[] Array = Movie[].class.cast(this.toArray(KeyType.Movie)); 
+	        
 	        Person[] C = null;
 	        for(Movie m: Array) { // A = ArrayList<Movie>
 	        	if(C != null) ps.println();
