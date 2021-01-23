@@ -24,9 +24,10 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	/****/
 	private ArrayOrdinato ArrMovie;
 	private ArrayOrdinato ArrPerson;
-	private BTree BTMovie;
-	private BTree BTPerson;
-	private sortingArray sortA;
+	private BTree<String> BTMovie;
+	private BTree<String> BTPerson;
+	//TODO ne definiamo l'istanza col tipo adatto nei metodi in cui va usato (searchMost)
+	//private sortingArray sortA;
 	
 	/** MovidaCore CONSTRUCTORS **/
 	public MovidaCore() {
@@ -43,19 +44,22 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		this.map = m;
 		this.ArrMovie 	= new ArrayOrdinato();
 		this.ArrPerson 	= new ArrayOrdinato();
-		this.BTMovie 	= new BTree();
-		this.BTPerson 	= new BTree();
-		this.sortA		= null;
+		//TODO String come tipo Comparable
+		this.BTMovie 	= new BTree<String>();
+		this.BTPerson 	= new BTree<String>();
+		//this.sortA		= null;
 	}
 	private void resetMovidaCore() {
 		this.ArrMovie 	= null;
 		this.ArrPerson 	= null;
 		this.BTMovie 	= null;
 		this.BTPerson 	= null;
-		this.sortA		= null;
+		//this.sortA		= null;
 	}
+	
 	/** MovidaCore Methods **/
-	private Object selectMethod(MapImplementation m,KeyType ktype, Operation op, Comparable key, Object e) {
+	//TODO String come tipo Comparable
+	private Object selectMethod(MapImplementation m,KeyType ktype, Operation op, String key, Object e) {
 		switch(m) {
 			case ArrayOrdinato:
 				switch(ktype) {
@@ -220,6 +224,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	        		Array = (Movie[]) ArrMovie.toArray();
 	        	case BTree:
 	        		Array = (Movie[]) BTMovie.toArray();
+	        	default: break;
 	        }
 	        Person[] C = null;
 	        for(Movie m: Array) { // A = ArrayList<Movie>
@@ -387,7 +392,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Person[] searchMostActiveActors(Integer N) {
-		// TODO Auto-generated method stub
 		Movie[] movies = (Movie[]) toArray(KeyType.Movie);
 		int nMovies = movies.length;
 		Person[] people = (Person[]) toArray(KeyType.Person);
