@@ -141,22 +141,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		}
 		return null;
 	}
-	private String deleteAccent(String s) {
-		char[] cAcc= "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ".toCharArray();
-		char[] cReg= "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy".toCharArray();
-		char[] c = s.toCharArray();
-		for(int i=0; i<c.length; i++) {
-			for(int j=0; j<cAcc.length; j++) {
-				if(c[i] == cAcc[j])
-					c[i] = cReg[j];
-			}
-		}
-		return String.valueOf(c);
-	}
-	public String normalizeString(String s) { 
-		s = this.deleteAccent(s);
-		s = s.replaceAll("[^\\w]", "").toLowerCase(); 
-		/** elimina tutti i caratteri TRANNE(^) i WORD characters(\w =azAZ19)*/
+	
+	private String normalizeString(String s) { 
+		String accents = "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ";
+		s = s.replaceAll("[^\\w["+accents+"]]", "").toLowerCase(); 
+		/** elimina tutti i caratteri TRANNE(^) i WORD characters(\w =azAZ19) e i caratteri accentati*/
 		return s;
 	}
 	
