@@ -24,8 +24,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	/****/
 	private ArrayOrdinato ArrMovie;
 	private ArrayOrdinato ArrPerson;
-	private BTree<String> BTMovie;
-	private BTree<String> BTPerson;
+	private BTree BTMovie;
+	private BTree BTPerson;
 	//TODO ne definiamo l'istanza col tipo adatto nei metodi in cui va usato (searchMost)
 	//private sortingArray sortA;
 	
@@ -45,8 +45,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		this.ArrMovie 	= new ArrayOrdinato();
 		this.ArrPerson 	= new ArrayOrdinato();
 		//TODO String come tipo Comparable
-		this.BTMovie 	= new BTree<String>();
-		this.BTPerson 	= new BTree<String>();
+		this.BTMovie 	= new BTree();
+		this.BTPerson 	= new BTree();
 		//this.sortA		= null;
 	}
 	private void resetMovidaCore() {

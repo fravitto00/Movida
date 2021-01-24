@@ -3,7 +3,7 @@ package perozzivittori;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BTree<K extends Comparable<K>> implements Dizionario<K> {
+public class BTree implements Dizionario {
 	
 	private static final int t = 2; // t >= 2
 
@@ -16,21 +16,21 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
     }
 	
 	@Override
-	public Object search(K k) {
+	public Object search(String k) {
 		return search(root, k, height);
 	}
 	
-	public Object search(Node v, K k, int ht) {
+	public Object search(Node v, String k, int ht) {
 		int pos = 0;
-		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++;
-		if (pos < v.m && eq(k,v.pairs[pos].key)) return v.pairs[pos].elem;
+		while(pos < v.m && k.compareTo(v.pairs[pos].key) > 0) pos++;
+		if (pos < v.m && k.equals(v.pairs[pos].key)) return v.pairs[pos].elem;
 		else {
 			if(ht == 0) return null;
 			else return search(v.children[pos], k, ht-1);
 		}
 	}
 	
-	public void insert(K k, Object e) {
+	public void insert(String k, Object e) {
 		Node tmp = insert(root, k, e, height);
 		if (tmp == null) return;
 		// Root split
@@ -45,9 +45,9 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 		System.out.println("New Root! Ht: " + height);
 	}
 	
-	public Node insert(Node v, K k, Object e, int ht) {
+	public Node insert(Node v, String k, Object e, int ht) {
 		int pos = 0;
-		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++; 				//research right position
+		while(pos < v.m && k.compareTo(v.pairs[pos].key) > 0) pos++; 				//research right position
 		InfoBT tmp = new InfoBT(k,e);
 		Node newNode = null;
 		
@@ -91,18 +91,18 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 		return tmp;	//return new node
 	}
 	
-    public Object delete(K k) {
+    public Object delete(String k) {
     	return delete(null, 0, root, k, height);
     }
     
-	public Object delete(Node father, int childInd, Node v, K k, int ht) {
+	public Object delete(Node father, int childInd, Node v, String k, int ht) {
 		int pos = 0;
 		Object tmp = null;
-		while(pos < v.m && greater(k,v.pairs[pos].key)) pos++; //research right position
-		if(pos < v.m && eq(k,v.pairs[pos].key)) {
+		while(pos < v.m && k.compareTo(v.pairs[pos].key) > 0) pos++; //research right position
+		if(pos < v.m && k.equals(v.pairs[pos].key)) {
 			if (ht != 0) { // intern node 
 				v.pairs[pos] = extractGreatest(v, pos, v.children[pos], ht - 1); //return v predecessor
-				delete(v, pos, v.children[pos], (K)v.pairs[pos].key, ht - 1);
+				delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);
 			} else { //leaf
 				deleteFromLeaf(father, childInd, v, pos);
 			}
@@ -270,14 +270,6 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
 		}
 		printTree(root, height);
 	}
-	
-    private boolean greater(Comparable k1, Comparable k2) {
-        return k1.compareTo(k2) > 0;
-    }
-
-    private boolean eq(Comparable k1, Comparable k2) {
-        return k1.compareTo(k2) == 0;
-    }    
     
     public Object[] toArray() {
     	List<Object> ll = new LinkedList<>();
@@ -318,21 +310,21 @@ public class BTree<K extends Comparable<K>> implements Dizionario<K> {
     	else System.out.println("do vai");
     }
    
-	protected static class Node {
-		protected int m;                             			// number of pairs
-		protected int c;										// number of children
-		protected InfoBT[] pairs = new InfoBT[2*t];				// array of key-value pairs (plus one for operations)
-		protected Node[] children = new Node[2*t+1];   			// array of children
+	private class Node {
+		int m;                             			// number of pairs
+		int c;										// number of children
+		InfoBT[] pairs = new InfoBT[2*t];				// array of key-value pairs (plus one for operations)
+		Node[] children = new Node[2*t+1];   			// array of children
 
         // create a node
-		protected Node() {m=0;}
+		private Node() {m=0;}
     }
 	
-	protected static class InfoBT{
-		protected Object elem;
-		protected Comparable key;
+	private class InfoBT{
+		Object elem;
+		String key;
 
-		protected InfoBT(Comparable k, Object e){
+		private InfoBT(String k, Object e){
 			key = k;
 			elem = e;
 		}
