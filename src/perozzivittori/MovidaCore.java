@@ -70,7 +70,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 							case Search:
 								return this.ArrMovie.search(key);
 							case Delete:
-								this.ArrMovie.delete(key);break;
+								return this.ArrMovie.delete(key);
 							default:
 								System.err.println("selectMethod(): default case");
 								System.exit(1);
@@ -84,7 +84,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 							case Search:
 								return this.ArrPerson.search(key);
 							case Delete:
-								this.ArrPerson.delete(key); break;
+								return this.ArrPerson.delete(key); 
 							default:
 								System.err.println("selectMethod(): default case");
 								System.exit(1);
@@ -106,7 +106,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 						case Search:
 							return this.BTMovie.search(key);
 						case Delete:
-							this.BTMovie.delete(key); break;
+							return this.BTMovie.delete(key);
 						default:
 							System.err.println("selectMethod(): default case");
 							System.exit(1);
@@ -120,7 +120,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 						case Search:
 							return this.BTPerson.search(key);
 						case Delete:
-							this.BTPerson.delete(key); break;
+							return this.BTPerson.delete(key);
 						default:
 							System.err.println("selectMethod(): default case");
 							System.exit(1);
@@ -188,14 +188,14 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				/** Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)*/
 				String Nname = null;
 				
-				if(this.getPersonByName(director.getName()) != null) {
+				if(this.getPersonByName(director.getName()) == null) {
 					Nname = this.normalizeString(director.getName());
 					selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, director);
 					selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, director);
 				}
 				
 				for(Person p: cast) {
-					if(this.getPersonByName(p.getName()) != null) {
+					if(this.getPersonByName(p.getName()) == null) {
 						Nname = this.normalizeString(p.getName());
 						selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, p);
 						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, p);
@@ -248,14 +248,14 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public int countMovies() {
-		Object[] Array = this.toArray(KeyType.Movie);
-		return Array.length;
+		//Object[] Array = this.toArray(KeyType.Movie);
+		//return Array.length;
+		return this.getAllMovies().length;
 	}
 
 	@Override
 	public int countPeople() {
-		Object[] Array = this.toArray(KeyType.Person);
-		return Array.length;
+		return this.getAllPeople().length;
 	}
 
 	@Override
@@ -277,7 +277,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Movie[] getAllMovies() {
-		return castToMovie(toArray(KeyType.Person));
+		return castToMovie(toArray(KeyType.Movie));
 	}
 
 	@Override
@@ -312,9 +312,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 	public Movie[] searchMoviesInYear(Integer year) {
 		Movie[] returnM = new Movie[0];
 		Movie[] movies = this.getAllMovies();
+		Integer y = 0;
 		
 		for(int i=0; i<movies.length; i++) {
-			if(movies[i].getYear() == year)
+			y = movies[i].getYear();
+			if(y.compareTo(year) == 0)
 				returnM = this.addToArray(returnM, movies[i]);
 		}
 		
@@ -329,7 +331,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		
 		for(int i=0; i<movies.length; i++) {
 			n = movies[i].getDirector().getName();
-			if(n.contains(name))
+			if(n.compareTo(name) == 0)
 				returnM = this.addToArray(returnM, movies[i]);
 		}
 		
@@ -343,10 +345,14 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		String pn = "";
 		
 		for(int i=0; i<movies.length; i++) {
-			for(Person p: movies[i].getCast())
+			for(Person p: movies[i].getCast()) {
 				pn = p.getName();
-				if(pn.contains(name))
+				if(pn.compareTo(name) == 0) {
 					returnM = this.addToArray(returnM, movies[i]);
+					break;
+				}
+				
+			}
 		}
 		
 		return returnM;

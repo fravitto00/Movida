@@ -1,15 +1,14 @@
 package perozzivittori;
 
-public class ArrayOrdinato implements Comparable{
+public class ArrayOrdinato{
 	
 	protected KeyElem[] A = new KeyElem[0];
-	//protected ArrayList<KeyElem> A = new ArrayList<KeyElem>();
 	
 	public static class KeyElem {
-		public Comparable key;
+		public String key;
 		public Object elem;
 		
-		public KeyElem(Comparable k, Object e) {
+		public KeyElem(String k, Object e) {
 			this.key = k;
 			this.elem = e;
 		}
@@ -17,8 +16,6 @@ public class ArrayOrdinato implements Comparable{
 	public ArrayOrdinato(){}
 	
 	public ArrayOrdinato(Object[] Arr) {
-		//for(KeyElem a: Arr)
-		//	this.A.add(a);
 		this.A = (KeyElem[]) Arr;
 		if(Arr != null && !SortedCheck())
 			throw new RuntimeException("Array NON ordinato");
@@ -33,7 +30,7 @@ public class ArrayOrdinato implements Comparable{
 	}
 	
 	//*****Implementazione tramite Array statico****
-	public void insert(Comparable k, Object e) {
+	public void insert(String k, Object e) {
 		int i,j;
 		KeyElem[] tmp = new KeyElem[A.length+1];
 		System.arraycopy(A, 0, tmp, 0, A.length);
@@ -45,7 +42,7 @@ public class ArrayOrdinato implements Comparable{
 		A[i] = new KeyElem(k, e);	
 	}
 	
-	public Object delete(Comparable k) {
+	public Object delete(String k) {
 		int i,j;
 		for(i=0; i<A.length; i++) {
 			if(k.equals(A[i].key)) {
@@ -62,7 +59,7 @@ public class ArrayOrdinato implements Comparable{
 		return A[i].elem;
 	}
 	
-	public Object search(Comparable k) {
+	public Object search(String k) {
 		int l=0, u=A.length-1, m; //lower, upper, m
 		while(l <= u) {
 			m =(int) (l+u) / 2;
@@ -72,10 +69,6 @@ public class ArrayOrdinato implements Comparable{
 		}
 		return null;
 	}
-	/*
-	public Object getE(int i) {
-		return this.A[i].elem;
-	}*/
 	
 	public int size() {
 		return A.length;
@@ -88,36 +81,4 @@ public class ArrayOrdinato implements Comparable{
 		}
 		return O;
 	}
-	
-	@Override
-	public int compareTo(Object o) {
-		ArrayOrdinato a = (ArrayOrdinato) o;
-		return this.compareTo(a);
-	}
-	
-	/*
-	 * ***Implementazione tramite ArrayList*****
-	public void insert(Comparable k, Object e) {
-		int i;
-		for( i=0; i < A.size(); i++) 
-			if(k.compareTo(A.get(i).key) <= 0) break;
-		A.add(i, new KeyElem(k, e));
-	}
-	
-	public void delete(Comparable k) {
-		if(!A.remove(k))
-			throw new RuntimeException();
-	}
-	
-	public Object search(Comparable k) {
-		int l=0, u=A.size()-1, m; //lower, upper, m
-		while(l <= u) {
-			m =(int) (l+u) / 2;
-			if(k.equals(A.get(m).key)) return A.get(m).elem;
-			if(k.compareTo(A.get(m).key) <= 0) 	u = m-1;
-			else l = m+1;
-		}
-		return null;
-	}
-	*/
 }
