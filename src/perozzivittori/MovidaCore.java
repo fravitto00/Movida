@@ -424,6 +424,21 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return returnArray;
 	}
 	
+	
+	private Movie[] castToMovie(Object[] array) {
+		Movie[] returnArray = new Movie[array.length];
+		for (int i=0; i < array.length; i++)
+			returnArray[i] = (Movie) array[i];
+		return returnArray;
+	}
+	
+	private Person[] castToPerson(Object[] array) {
+		Person[] returnArray = new Person[array.length];
+		for (int i=0; i < array.length; i++)
+			returnArray[i] = (Person) array[i];
+		return returnArray;
+	}
+	
 	private Movie[] buildArray(Integer N, int nMovies, SortPairIntMovie[] pairedArray) {
 		Movie[] returnArray = null;
 		if(nMovies >= N)	returnArray = new Movie[N];
@@ -539,19 +554,5 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				return false;
 			
 		}
-	}
-	
-	private Movie[] castToMovie(Object[] array) {
-		Movie[] returnArray = new Movie[array.length];
-		for (int i=0; i < array.length; i++)
-			returnArray[i] = (Movie) array[i];
-		return returnArray;
-	}
-	
-	private Person[] castToPerson(Object[] array) {
-		Person[] returnArray = new Person[array.length];
-		for (int i=0; i < array.length; i++)
-			returnArray[i] = (Person) array[i];
-		return returnArray;
 	}
 }
