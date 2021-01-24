@@ -423,9 +423,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		else				returnArray = new Person[nMovies]; N = nMovies;
 		
 		
-		//ordine decrescente (mostRecent e mostVoted)
+		//ordine decrescente (mostActive)
 		for(int i=0; i < N; i++)
-			returnArray[i] = nStarred[N-1-i].getPerson();
+			returnArray[i] = nStarred[nPeople-1-i].getPerson();
 		
 		return returnArray;
 	}
@@ -452,7 +452,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		
 		//ordine decrescente (mostRecent e mostVoted)
 		for(int i=0; i < N; i++)
-			returnArray[i] = pairedArray[N-1-i].getMovie();
+			returnArray[i] = pairedArray[nMovies-1-i].getMovie();
 		
 		return returnArray;
 	}
