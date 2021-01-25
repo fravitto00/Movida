@@ -28,6 +28,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	private BTree BTPerson;
 	//TODO ne definiamo l'istanza col tipo adatto nei metodi in cui va usato (searchMost)
 	//private sortingArray sortA;
+	NonOrientedGraph graph;
 	
 	/** MovidaCore CONSTRUCTORS **/
 	public MovidaCore() {
@@ -48,6 +49,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		this.BTMovie 	= new BTree();
 		this.BTPerson 	= new BTree();
 		//this.sortA		= null;
+		this.graph 		= new NonOrientedGraph();
 	}
 	private void resetMovidaCore() {
 		this.ArrMovie 	= null;
@@ -263,8 +265,20 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		Object r = selectMethod(this.map, KeyType.Movie, Operation.Delete, this.normalizeString(title), null); 
-		if (r == null) return false;
+		Object deletedObj = selectMethod(this.map, KeyType.Movie, Operation.Delete, this.normalizeString(title), null); 
+		if (deletedObj == null) return false;
+		
+		//Aggiornamento Grafo
+		Movie deletedMovie = (Movie) deletedObj;
+		Person[] cast = deletedMovie.getCast();
+ 
+		//No solo
+		if (cast.length > 1) {
+			//Per ogni attore, elimina gli archi che vanno verso gli attori successivi (l'implementazione di removeEdge evita la simmetria dell'operazione verso i precedenti)
+			for(int i=0; i < cast.length-1; i++)
+				for(int j=i; j < cast.length; j++)
+					graph.removeEdge(new Edge(cast[i], cast[j]));
+		}
 		return true;
 	}
 	
@@ -589,8 +603,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	/**
 	 * IMovidaCollaborations
 	 */
-	
-	NonOrientedGraph graph;
 	
 	@Override
 	public Person[] getDirectCollaboratorsOf(Person actor) {

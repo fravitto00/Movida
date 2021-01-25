@@ -97,19 +97,18 @@ public class BTree implements Dizionario {
     
 	public Object delete(Node father, int childInd, Node v, String k, int ht) {
 		int pos = 0;
-		Object tmp = null;
+		Object deletedObj = null;
 		while(pos < v.m && k.compareTo(v.pairs[pos].key) > 0) pos++; //research right position
 		if(pos < v.m && k.equals(v.pairs[pos].key)) {
 			if (ht != 0) { // intern node 
 				v.pairs[pos] = extractGreatest(v, pos, v.children[pos], ht - 1); //return v predecessor
-				delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);
+				deletedObj  = delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);
 			} else { //leaf
-				deleteFromLeaf(father, childInd, v, pos);
+				deletedObj  = deleteFromLeaf(father, childInd, v, pos);
 			}
-			tmp = v;
 		}
 		
-		if (ht != 0 && tmp==null) tmp = delete(v, pos, v.children[pos], k, ht - 1);
+		if (ht != 0 && deletedObj==null) deletedObj = delete(v, pos, v.children[pos], k, ht - 1);
 		
 		//Ribilanciamento
 		if(v.m < t-1 && father != null) {
@@ -117,7 +116,7 @@ public class BTree implements Dizionario {
 			balance(father, childInd, v, t-2);
 		}
 		
-		return tmp;
+		return deletedObj;
 	}
 	
 	private InfoBT extractGreatest(Node father, int childInd, Node v, int ht) {
@@ -127,14 +126,16 @@ public class BTree implements Dizionario {
 		return v.pairs[v.m-1];															//v.m-1 equals to the last pair (the greatest)
 	}
 	
-	private void deleteFromLeaf(Node father, int childInd, Node leaf, int d) {
+	private Object deleteFromLeaf(Node father, int childInd, Node leaf, int d) {
+		Object deletedObj = leaf.pairs[d];
 		leaf.pairs[d] = null;
 		if (leaf.m > t-1 || father == null) {														
 			leaf.m--;														//pairs counter update
 			for(int i=d; i < leaf.m; i++) leaf.pairs[i] = leaf.pairs[i+1];	//slide operation 
-			printTree();
+			//printTree();
 		}
 		else balance(father, childInd, leaf, d);
+		return deletedObj;
 	}
 	
 	private void balance(Node father, int childInd, Node v, int d) {
