@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 import movida.commons.*;
 
-public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
+public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMovidaCollaborations {
 	public enum Operation{
 		Insert,
 		Search,
@@ -149,7 +149,10 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return s;
 	}
 	
-	// IMovidaDB
+	/**
+	 * IMovidaDB
+	 */
+	
 	public void loadFromFile(File f) {
 		try {
 			Scanner in = new Scanner(f);
@@ -285,7 +288,10 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return castToPerson(toArray(KeyType.Person));
 	}
 	
-	//IMovidaSearch
+	/**
+	 * IMovidaSearch
+	 */
+	
 	private Movie[] addToArray(Movie[] M, Movie m) {
 		Movie[] returnM = new Movie[M.length+1];
 		System.arraycopy(M, 0, returnM, 0, M.length);
@@ -542,8 +548,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		return r;
 	}
 	
-
-	// IMovidaConfig
+	/**
+	 * IMovidaConfig
+	 */
 	
 	@Override
 	public boolean setSort(SortingAlgorithm a) {
@@ -577,5 +584,25 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				return false;
 			
 		}
+	}
+	
+	/**
+	 * IMovidaCollaborations
+	 */
+	
+	@Override
+	public Person[] getDirectCollaboratorsOf(Person actor) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Person[] getTeamOf(Person actor) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Collaboration[] maximizeCollaborationsInTheTeamOf(Person actor) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
