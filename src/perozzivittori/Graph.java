@@ -9,7 +9,7 @@ public interface Graph {
 	public int countEdges();
 	
 	/**
-	* I vertici sono rappresentati dagli attori 
+	* I vertici sono rappresentati dagli attori e gli archi da Collaboration
 	*/
 	public int degree(Person vertex);
 	
