@@ -17,19 +17,25 @@ package movida.commons;
  * 
  * Semplificazione: <code>name</code> ? usato per memorizzare il nome completo (nome e cognome)
  * 
- * La classe pu˜ essere modicata o estesa ma deve implementare il metodo getName().
+ * La classe puï¿½ essere modicata o estesa ma deve implementare il metodo getName().
  * 
  */
 public class Person {
 
 	private String name;
+	private boolean director; // true: director; false: actor
 	
-	public Person(String name) {
+	public Person(String name, boolean d) {
 		this.name = name;
+		this.director = d;
 	}
 	
 	public String getName(){
 		return this.name;
+	}
+	
+	public boolean isDirector() {
+		return this.director;
 	}
 	
 }

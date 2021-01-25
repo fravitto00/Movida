@@ -163,14 +163,14 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 				int year 		= Integer.parseInt(s.substring(s.indexOf(':') + 1).trim());
 				//Director
 				s=in.nextLine();
-				Person director = new Person(s.substring(s.indexOf(':') + 1).trim());
+				Person director = new Person(s.substring(s.indexOf(':') + 1).trim(), true);
 				//Cast
 				s=in.nextLine();
 				String[] people = s.substring(s.indexOf(':') + 1).trim().split(",");
 				Person[] cast = new Person[people.length];
 				int i = 0;
 				for (String p : people) {
-					cast[i] = new Person(p.trim());
+					cast[i] = new Person(p.trim(), false);
 					i++;
 				}
 				//Votes
@@ -392,10 +392,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 
 	@Override
 	public Person[] searchMostActiveActors(Integer N) {
-		Movie[] movies = castToMovie(toArray(KeyType.Movie));
+		Movie[] movies = this.getAllMovies(); //castToMovie(toArray(KeyType.Movie));
 		int nMovies = movies.length;
-		Person[] people = castToPerson(toArray(KeyType.Person));
+		Person[] people = this.getAllActors(); //castToPerson(toArray(KeyType.Person));
 		int nPeople = people.length;
+		
 		
 		SortPairIntPerson[] starredCount = new SortPairIntPerson[nPeople];
 		
@@ -408,11 +409,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		for(int i=0; i < nMovies; i++) {
 			cast = movies[i].getCast();
 			//Iterates through movie's cast
-			for(int j=0; i < cast.length; i++) {
+			for(int j=0; j < cast.length; j++) {
 				//Iterates through actors
-				for(int k=0; i < nPeople; i++) {
+				for(int k=0; k < nPeople; k++) {
 					//checks name instead of intere object for bo (optimization?)
-					if (cast[j].getName().equals(people[k].getName()))  starredCount[k].increase();
+					if (cast[j].getName().compareTo(people[k].getName()) == 0)  starredCount[k].increase();
 				}
 			}
 		}
@@ -425,7 +426,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		//return buildArray(N, nMovies, countersToSort.getA());
 		Person[] returnArray = null;
 		if(nPeople >= N)	returnArray = new Person[N];
-		else				{returnArray = new Person[nMovies]; N = nMovies;}
+		else				{returnArray = new Person[nPeople]; N = nPeople;}
 		
 		
 		//ordine decrescente (mostActive)
@@ -434,7 +435,18 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		
 		return returnArray;
 	}
-	
+	private Person[] getAllActors() {
+		Person[] A = new Person[0];
+		for(Person p: this.getAllPeople()) {
+			if(!p.isDirector()) {
+				Person[] tmp = new Person[A.length+1];
+				System.arraycopy(A, 0, tmp, 0, A.length);
+				tmp[A.length] = p;
+				A = tmp;
+			}
+		}
+		return A;
+	}
 	
 	private Movie[] castToMovie(Object[] array) {
 		Movie[] returnArray = new Movie[array.length];

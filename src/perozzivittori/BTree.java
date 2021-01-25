@@ -42,7 +42,7 @@ public class BTree implements Dizionario {
 		newRoot.c = 2;
 		height++;
 		root = newRoot;
-		System.out.println("New Root! Ht: " + height);
+		//System.out.println("New Root! Ht: " + height);
 	}
 	
 	public Node insert(Node v, String k, Object e, int ht) {
@@ -112,7 +112,7 @@ public class BTree implements Dizionario {
 		if (ht != 0) tmp = delete(v, pos, v.children[pos], k, ht - 1);
 		//else return null;
 		if(v.m < t-1 && father != null) {
-			System.out.println("Nodo interno invalido");
+			//System.out.println("Nodo interno invalido");
 			balance(father, childInd, v, t-2);
 		}
 		return tmp;
@@ -161,7 +161,7 @@ public class BTree implements Dizionario {
 				s += "Nodo Interno - ";
 			}
 			redistribution = true;
-			System.out.println(s + "LR");
+			//System.out.println(s + "LR");
 		}
 			
 		//right redistribution
@@ -181,7 +181,7 @@ public class BTree implements Dizionario {
 				s += "Nodo Interno - ";
 			}
 			redistribution = true;
-			System.out.println(s + "RR");
+			//System.out.println(s + "RR");
 		}
 		if (redistribution) {
 			printTree(root, height);
@@ -218,7 +218,7 @@ public class BTree implements Dizionario {
 				s += "Nodo Interno - ";
 			}
 			fusion = true;
-			System.out.println(s + "LF");
+			//System.out.println(s + "LF");
 				
 		//right fusion	
 		} else if (rightSibling != null){
@@ -249,10 +249,10 @@ public class BTree implements Dizionario {
 				for(int i=0; i < v.c; i++) rightSibling.children[i] = v.children[i];							//acquisition children
 				rightSibling.c += v.c;
 				s += "Nodo Interno - ";
-				System.out.println("v.child: " + rightSibling.children[1].pairs[0].key);
+				//System.out.println("v.child: " + rightSibling.children[1].pairs[0].key);
 			}
 			fusion = true;
-			System.out.println(s + "RF");
+			//System.out.println(s + "RF");
 		}
 			
 		//root vanishes
@@ -260,13 +260,13 @@ public class BTree implements Dizionario {
 			if(leftSibling != null)	root = leftSibling;
 			if(rightSibling != null)root = rightSibling;
 			height--;
-			System.out.println("New Ht: " + height);
+			//System.out.println("New Ht: " + height);
 		}
 			
 		//probably useless
 		if(!redistribution && !fusion) {
 			v.m--;
-			System.out.println("Inutile");
+			//System.out.println("Inutile");
 		}
 		printTree(root, height);
 	}
@@ -302,12 +302,12 @@ public class BTree implements Dizionario {
     		int i;
     		for(i=0; i < v.m; i++) {
     			if(v.c > i) printTree(v.children[i], ht - 1);
-    			System.out.println(v.pairs[i].key + " ad " + ht + s);
+    			//System.out.println(v.pairs[i].key + " ad " + ht + s);
     		}
     		//last child
     		if(v.c > i) printTree(v.children[i], ht - 1);
     	}
-    	else System.out.println("do vai");
+    	//else System.out.println("do vai");
     }
    
 	private class Node {
