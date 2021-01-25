@@ -590,10 +590,19 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	 * IMovidaCollaborations
 	 */
 	
+	NonOrientedGraph graph;
+	
 	@Override
 	public Person[] getDirectCollaboratorsOf(Person actor) {
-		// TODO Auto-generated method stub
-		return null;
+		Edge[] actorEdges = graph.incidentEdges(actor);
+		int nCollaborators = actorEdges.length;
+		Person[] collaborators = new Person[nCollaborators];
+		
+		//actor is "A" in A-B edges' pairs, "B" is the collaborator
+		for (int i=0; i < nCollaborators; i++)
+			collaborators[i] = actorEdges[i].getB();
+		
+		return collaborators;
 	}
 	@Override
 	public Person[] getTeamOf(Person actor) {
