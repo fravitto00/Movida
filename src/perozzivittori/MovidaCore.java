@@ -397,25 +397,30 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		Person[] people = castToPerson(toArray(KeyType.Person));
 		int nPeople = people.length;
 		
-		SortPairIntPerson[] nStarred = new SortPairIntPerson[nPeople];
+		SortPairIntPerson[] starredCount = new SortPairIntPerson[nPeople];
 		
 		for (int i=0; i< nPeople; i++) 
-			nStarred[i] = new SortPairIntPerson(0, people[i]);
+			starredCount[i] = new SortPairIntPerson(0, people[i]);
+		
+		//Riempimento array dei contatori degli attori
+		Person[] cast;
 		
 		for(int i=0; i < nMovies; i++) {
-			Person[] cast = movies[i].getCast();
+			cast = movies[i].getCast();
+			//Iterates through movie's cast
 			for(int j=0; i < cast.length; i++) {
+				//Iterates through actors
 				for(int k=0; i < nPeople; i++) {
 					//checks name instead of intere object for bo (optimization?)
-					if (cast[j].getName() == people[k].getName())  nStarred[k].increase();
+					if (cast[j].getName().equals(people[k].getName()))  starredCount[k].increase();
 				}
 			}
 		}
 		
-		sortingArray<SortPairIntPerson> countersToSort = new sortingArray<SortPairIntPerson>(nStarred);
+		sortingArray<SortPairIntPerson> countersToSort = new sortingArray<SortPairIntPerson>(starredCount);
 		
 		countersToSort.sort(this.alg);
-		nStarred = countersToSort.getA();
+		starredCount = countersToSort.getA();
 		
 		//return buildArray(N, nMovies, countersToSort.getA());
 		Person[] returnArray = null;
@@ -425,7 +430,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 		
 		//ordine decrescente (mostActive)
 		for(int i=0; i < N; i++)
-			returnArray[i] = nStarred[nPeople-1-i].getPerson();
+			returnArray[i] = starredCount[nPeople-1-i].getPerson();
 		
 		return returnArray;
 	}
@@ -482,7 +487,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch {
 			return i.compareTo(sp.getInt());
 		}
 		
-		public void increase() {i++;}
+		public void increase() {this.i++;}
 		
 		public Integer getInt() {return i;}
 		
