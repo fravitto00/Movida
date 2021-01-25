@@ -109,12 +109,14 @@ public class BTree implements Dizionario {
 			tmp = v;
 		}
 		
-		if (ht != 0) tmp = delete(v, pos, v.children[pos], k, ht - 1);
-		//else return null;
+		if (ht != 0 && tmp==null) tmp = delete(v, pos, v.children[pos], k, ht - 1);
+		
+		//Ribilanciamento
 		if(v.m < t-1 && father != null) {
 			//System.out.println("Nodo interno invalido");
 			balance(father, childInd, v, t-2);
 		}
+		
 		return tmp;
 	}
 	
