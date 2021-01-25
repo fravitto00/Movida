@@ -153,17 +153,14 @@ public class BTree implements Dizionario {
 			father.pairs[childInd-1] = leftSibling.pairs[leftSibling.m-1];			//pairs swap
 			leftSibling.pairs[leftSibling.m-1] = null;
 			leftSibling.m--;
-			String s= "";
 			if(v.c > 0) {															//internal node (with children)
 				for(int i=0; i < v.c; i++) v.children[i+1] = v.children[i];			//slide children
 				v.c++;
 				leftSibling.c--;
 				v.children[0] = leftSibling.children[v.c];
 				leftSibling.children[v.c] = null;
-				s += "Nodo Interno - ";
 			}
 			redistribution = true;
-			//System.out.println(s + "LR");
 		}
 			
 		//right redistribution
@@ -174,16 +171,13 @@ public class BTree implements Dizionario {
 			father.pairs[childInd] = rightSibling.pairs[0];							//pairs swap
 			rightSibling.m--;
 			for(int i=0; i < rightSibling.m; i++) rightSibling.pairs[i] = rightSibling.pairs[i+1];	//slide operation for sibling
-			String s = "";
 			if(v.c > 0) {																			//internal node (with children)
 				v.children[v.c] = rightSibling.children[0]; 													//sottoalbero passing with rotation
 				v.c++;	
 				rightSibling.c--;
 				for(int i=0; i < rightSibling.c; i++) rightSibling.children[i] = rightSibling.children[i+1];	//slide children
-				s += "Nodo Interno - ";
 			}
 			redistribution = true;
-			//System.out.println(s + "RR");
 		}
 		if (redistribution) {
 			printTree(root, height);
@@ -213,14 +207,11 @@ public class BTree implements Dizionario {
 			for(int i=childInd-1; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
 			for(int i=childInd; i < father.c; i++) father.children[i] = father.children[i+1];
 			
-			String s = "";
 			if(v.c > 0) {																			//internal node (with children)
 				for(int i=0; i < v.c; i++) leftSibling.children[i+leftSibling.c] = v.children[i];	//acquisition children
 				leftSibling.c += v.c;
-				s += "Nodo Interno - ";
 			}
 			fusion = true;
-			//System.out.println(s + "LF");
 				
 		//right fusion	
 		} else if (rightSibling != null){
@@ -245,16 +236,12 @@ public class BTree implements Dizionario {
 			father.m--; father.c--;
 			for(int i=childInd; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
 			for(int i=childInd; i < father.c; i++) father.children[i] = father.children[i+1];
-			String s = "";
 			if(v.c > 0) {																						//internal node (with children)
 				for(int i=0; i < rightSibling.c; i++) rightSibling.children[rightSibling.c-1+v.c-i] = rightSibling.children[rightSibling.c-1-i];	//slide children
 				for(int i=0; i < v.c; i++) rightSibling.children[i] = v.children[i];							//acquisition children
 				rightSibling.c += v.c;
-				s += "Nodo Interno - ";
-				//System.out.println("v.child: " + rightSibling.children[1].pairs[0].key);
 			}
 			fusion = true;
-			//System.out.println(s + "RF");
 		}
 			
 		//root vanishes
@@ -262,15 +249,7 @@ public class BTree implements Dizionario {
 			if(leftSibling != null)	root = leftSibling;
 			if(rightSibling != null)root = rightSibling;
 			height--;
-			//System.out.println("New Ht: " + height);
 		}
-			
-		//probably useless
-		if(!redistribution && !fusion) {
-			v.m--;
-			//System.out.println("Inutile");
-		}
-		printTree(root, height);
 	}
     
     public Object[] toArray() {
@@ -299,17 +278,14 @@ public class BTree implements Dizionario {
     
     private void printTree(Node v, int ht) {
     	if (v != null) {
-    		String s = "";
-    		if (v==root) s = ", root";
     		int i;
     		for(i=0; i < v.m; i++) {
     			if(v.c > i) printTree(v.children[i], ht - 1);
-    			//System.out.println(v.pairs[i].key + " ad " + ht + s);
     		}
+    		
     		//last child
     		if(v.c > i) printTree(v.children[i], ht - 1);
     	}
-    	//else System.out.println("do vai");
     }
    
 	private class Node {
