@@ -1,14 +1,16 @@
 package perozzivittori;
 
 import movida.commons.Person;
+
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class NonOrientedGraph implements Graph {
 	
 	//Lista di Adiacenza sui nomi degli attori
-	Map<Person, List<Person>> adjacentList = new HashMap<>();
+	private Map<Person, List<Person>> adjacentList = new HashMap<>();
 	
 	@Override
 	public int countVertices() {
@@ -73,32 +75,63 @@ public class NonOrientedGraph implements Graph {
 
 	@Override
 	public boolean areAdjacent(Person vertexA, Person vertexB) {
-		// TODO Auto-generated method stub
+		List<Person> L = null;
+		if(!adjacentList.isEmpty() && vertexA != null && vertexB != null) {
+			L = this.adjacentList.get(vertexA);
+			for(Person adjacentV: L) {
+				if (adjacentV.equals(vertexB))
+					return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public void addVertex(Person vertex) {
-		// TODO Auto-generated method stub
-		
+		if(!adjacentList.isEmpty() && vertex != null)
+			this.adjacentList.put(vertex, new LinkedList<Person>());
 	}
 
 	@Override
 	public void addEdge(Person vertexA, Person vertexB) {
-		// TODO Auto-generated method stub
-		
+		if(!adjacentList.isEmpty() && vertexA != null && vertexB != null) {
+			this.adjacentList.get(vertexA).add(vertexB);
+			this.adjacentList.get(vertexB).add(vertexA);
+		}
 	}
 
 	@Override
 	public void removeVertex(Person vertex) {
-		// TODO Auto-generated method stub
+		if(!adjacentList.isEmpty() && vertex != null) {
+			List<Person> L = null;
+			this.adjacentList.remove(vertex);
+			for(Map.Entry<Person, List<Person>> entry : this.adjacentList.entrySet()) {
+				L = entry.getValue();
+				for(int i=0; i<L.size(); i++) {
+					if(L.get(i).equals(vertex))
+						this.adjacentList.get(entry.getKey()).remove(i);
+				}
+					
+			}
+		}
 		
 	}
 
 	@Override
 	public void removeEdge(Edge edge) {
-		// TODO Auto-generated method stub
-		
+		if(!adjacentList.isEmpty() && edge != null) {
+			List<Person> L = null;
+			L = this.adjacentList.get(edge.getA());
+			for(int i=0; i<L.size(); i++) {
+				if(L.get(i).equals(edge.getB()))
+					this.adjacentList.get(edge.getA()).remove(i);					
+			}
+			L = this.adjacentList.get(edge.getB());
+			for(int i=0; i<L.size(); i++) {
+				if(L.get(i).equals(edge.getA()))
+					this.adjacentList.get(edge.getB()).remove(i);					
+			}
+		}
 	}
 
 }

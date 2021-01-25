@@ -14,7 +14,7 @@ public class ArrayOrdinato{
 		}
 	}
 	public ArrayOrdinato(){}
-	
+	/*
 	public ArrayOrdinato(Object[] Arr) {
 		this.A = (KeyElem[]) Arr;
 		if(Arr != null && !SortedCheck())
@@ -28,7 +28,7 @@ public class ArrayOrdinato{
 		}
 		return true;
 	}
-	
+	*/
 	//*****Implementazione tramite Array statico****
 	public void insert(String k, Object e) {
 		int i,j;
@@ -44,19 +44,19 @@ public class ArrayOrdinato{
 	
 	public Object delete(String k) {
 		int i,j;
+		Object deletedObj = null;
 		for(i=0; i<A.length; i++) {
 			if(k.equals(A[i].key)) {
+				deletedObj = A[i].elem;
 				for(j=i; j < A.length-1; j++)
 					A[j]=A[j+1];
 				break;
 			}
 		}
-		if(i == A.length) 
-			return null;
 		KeyElem[] tmp = new KeyElem[A.length-1];
 		System.arraycopy(A, 0, tmp, 0, tmp.length);
 		A = tmp;
-		return A[i].elem;
+		return deletedObj;
 	}
 	
 	public Object search(String k) {
