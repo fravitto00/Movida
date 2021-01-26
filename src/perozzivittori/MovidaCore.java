@@ -57,6 +57,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		this.BTMovie 	= null;
 		this.BTPerson 	= null;
 		//this.sortA		= null;
+		this.graph		= null;
 	}
 	
 	/** MovidaCore Methods **/
