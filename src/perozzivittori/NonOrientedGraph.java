@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class NonOrientedGraph implements Graph {
 	
@@ -76,12 +77,12 @@ public class NonOrientedGraph implements Graph {
 
 	@Override
 	public boolean areAdjacent(Person vertexA, Person vertexB) {
-		List<Person> L = null;
+		List<Collaboration> edgesList = null;
 		if(!adjacentList.isEmpty() && vertexA != null && vertexB != null) {
-			L = this.adjacentList.get(vertexA);
-			for(Person adjacentV: L) {
-				if (adjacentV.equals(vertexB))
-					return true;
+			edgesList = this.adjacentList.get(vertexA);
+			for(Collaboration edge: edgesList) {
+				  if(this.opposite(vertexB, edge).equals(vertexA))
+					  return true;
 			}
 		}
 		return false;
@@ -90,29 +91,29 @@ public class NonOrientedGraph implements Graph {
 	@Override
 	public void addVertex(Person vertex) {
 		if(!adjacentList.isEmpty() && vertex != null)
-			this.adjacentList.put(vertex, new LinkedList<Person>());
+			this.adjacentList.put(vertex, new LinkedList<Collaboration>());
 	}
 
 	@Override
 	public void addEdge(Person vertexA, Person vertexB) {
 		if(!adjacentList.isEmpty() && vertexA != null && vertexB != null) {
-			this.adjacentList.get(vertexA).add(vertexB);
-			this.adjacentList.get(vertexB).add(vertexA);
+			this.adjacentList.get(vertexA).add(new Collaboration(vertexA, vertexB));
+			this.adjacentList.get(vertexB).add(new Collaboration(vertexA, vertexB));
 		}
 	}
 
 	@Override
 	public void removeVertex(Person vertex) {
 		if(!adjacentList.isEmpty() && vertex != null) {
-			List<Person> L = null;
+			List<Collaboration> edgesList = null;
 			this.adjacentList.remove(vertex);
-			for(Map.Entry<Person, List<Person>> entry : this.adjacentList.entrySet()) {
-				L = entry.getValue();
-				for(int i=0; i<L.size(); i++) {
-					if(L.get(i).equals(vertex))
+			for(Entry<Person, List<Collaboration>> entry : this.adjacentList.entrySet()) {
+				edgesList = entry.getValue();
+				for(int i=0; i<edgesList.size(); i++) {
+					Collaboration c = edgesList.get(i);
+					if(vertex.equals(c.getActorA()) || vertex.equals(c.getActorB()))
 						this.adjacentList.get(entry.getKey()).remove(i);
 				}
-					
 			}
 		}
 		
@@ -121,17 +122,19 @@ public class NonOrientedGraph implements Graph {
 	@Override
 	public void removeEdge(Collaboration edge) {
 		if(!adjacentList.isEmpty() && edge != null) {
-			List<Person> L = null;
-			L = this.adjacentList.get(edge.getActorA());
-			for(int i=0; i<L.size(); i++) {
-				if(L.get(i).equals(edge.getActorB()))
+			List<Collaboration> edgeList = null;
+			edgeList = this.adjacentList.get(edge.getActorA());
+			edgeList.remove(edgeList.indexOf(edge));
+		/*	for(int i=0; i<edgeList.size(); i++) {
+				if(edgeList.get(i).equals(edge))
 					this.adjacentList.get(edge.getActorA()).remove(i);					
-			}
-			L = this.adjacentList.get(edge.getActorB());
-			for(int i=0; i<L.size(); i++) {
-				if(L.get(i).equals(edge.getActorA()))
+			}*/
+			edgeList = this.adjacentList.get(edge.getActorB());
+			edgeList.remove(edgeList.indexOf(edge));
+		/*	for(int i=0; i<edgeList.size(); i++) {
+				if(edgeList.get(i).equals(edge))
 					this.adjacentList.get(edge.getActorB()).remove(i);					
-			}
+			}*/
 		}
 	}
 	
@@ -150,7 +153,7 @@ public class NonOrientedGraph implements Graph {
 						removeEdge(edge);
 						removeEdge(symEdge);
 					}
-				}				
+				}	
 			}
 		}
 	}
