@@ -1,6 +1,7 @@
 package perozzivittori;
 
 import movida.commons.Person;
+import movida.commons.Collaboration;
 
 public interface Graph {
 	public int countVertices();
@@ -12,11 +13,11 @@ public interface Graph {
 	*/
 	public int degree(Person vertex);
 	
-	public Edge[] incidentEdges(Person vertex);
+	public Collaboration[] incidentEdges(Person vertex);
 	
-	public Person[] endVertices(Edge edge);
+	public Person[] endVertices(Collaboration edge);
 	
-	public Person opposite(Person vertex, Edge edge);
+	public Person opposite(Person vertex, Collaboration edge);
 	
 	public boolean areAdjacent(Person vertexA, Person vertexB);
 	
@@ -26,5 +27,5 @@ public interface Graph {
 	
 	public void removeVertex(Person vertex);
 	
-	public void removeEdge(Edge edge);
+	public void removeEdge(Collaboration edge);
 }

@@ -278,7 +278,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 			//Per ogni attore, elimina gli archi che vanno verso gli attori successivi (l'implementazione di removeEdge evita la simmetria dell'operazione verso i precedenti)
 			for(int i=0; i < cast.length-1; i++)
 				for(int j=i; j < cast.length; j++)
-					graph.removeEdge(new Edge(cast[i], cast[j]));
+					graph.removeMovieFromEdge(deletedMovie, cast[i], cast[j]);
 		}
 		return true;
 	}
@@ -607,13 +607,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	
 	@Override
 	public Person[] getDirectCollaboratorsOf(Person actor) {
-		Edge[] actorEdges = graph.incidentEdges(actor);
+		Collaboration[] actorEdges = graph.incidentEdges(actor);
 		int nCollaborators = actorEdges.length;
 		Person[] collaborators = new Person[nCollaborators];
 		
 		//actor is "A" in A-B edges' pairs, "B" is the collaborator
 		for (int i=0; i < nCollaborators; i++)
-			collaborators[i] = actorEdges[i].getB();
+			collaborators[i] = actorEdges[i].getActorB();
 		
 		return collaborators;
 	}

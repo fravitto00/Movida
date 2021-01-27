@@ -1,7 +1,8 @@
 package perozzivittori;
 
 import movida.commons.Person;
-
+import movida.commons.Collaboration;
+import movida.commons.Movie;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Map;
 public class NonOrientedGraph implements Graph {
 	
 	//Lista di Adiacenza sui nomi degli attori
-	private Map<Person, List<Person>> adjacentList = new HashMap<>();
+	private Map<Person, List<Collaboration>> adjacentList = new HashMap<>();
 	
 	@Override
 	public int countVertices() {
@@ -38,37 +39,37 @@ public class NonOrientedGraph implements Graph {
 	}
 
 	@Override
-	public Edge[] incidentEdges(Person vertex) {
-		Edge[] edges = null;
+	public Collaboration[] incidentEdges(Person vertex) {
+		Collaboration[] edges = null;
 		if (!adjacentList.isEmpty() && vertex != null) {
-			List<Person> edgesList = adjacentList.get(vertex);
+			List<Collaboration> edgesList = adjacentList.get(vertex);
 			int nEdges = edgesList.size();
-			edges = new Edge[nEdges];
+			edges = new Collaboration[nEdges];
 			for (int i=0; i < nEdges; i++)
-				edges[i] = new Edge(vertex, edgesList.get(i));
+				edges[i] = (Collaboration) edgesList.get(i);
 		}
 		return edges;
 	}
 
 	@Override
-	public Person[] endVertices(Edge edge) {
+	public Person[] endVertices(Collaboration edge) {
 		Person[] people = null;
 		if (!adjacentList.isEmpty() && edge != null) {
 			people = new Person[2];
-			people[0] = edge.getA();
-			people[1] = edge.getB();
+			people[0] = edge.getActorA();
+			people[1] = edge.getActorB();
 		}
 		return people;
 	}
 
 	@Override
-	public Person opposite(Person vertex, Edge edge) {
+	public Person opposite(Person vertex, Collaboration edge) {
 		Person opposite = null;
 		if (!adjacentList.isEmpty() && vertex != null && edge != null) {
-			if(vertex.equals(edge.getA()))
-				opposite = edge.getB();
-			else if (vertex.equals(edge.getB()))
-				opposite = edge.getA();
+			if(vertex.equals(edge.getActorA()))
+				opposite = edge.getActorB();
+			else if (vertex.equals(edge.getActorB()))
+				opposite = edge.getActorA();
 		}
 		return opposite;
 	}
@@ -118,18 +119,38 @@ public class NonOrientedGraph implements Graph {
 	}
 
 	@Override
-	public void removeEdge(Edge edge) {
+	public void removeEdge(Collaboration edge) {
 		if(!adjacentList.isEmpty() && edge != null) {
 			List<Person> L = null;
-			L = this.adjacentList.get(edge.getA());
+			L = this.adjacentList.get(edge.getActorA());
 			for(int i=0; i<L.size(); i++) {
-				if(L.get(i).equals(edge.getB()))
-					this.adjacentList.get(edge.getA()).remove(i);					
+				if(L.get(i).equals(edge.getActorB()))
+					this.adjacentList.get(edge.getActorA()).remove(i);					
 			}
-			L = this.adjacentList.get(edge.getB());
+			L = this.adjacentList.get(edge.getActorB());
 			for(int i=0; i<L.size(); i++) {
-				if(L.get(i).equals(edge.getA()))
-					this.adjacentList.get(edge.getB()).remove(i);					
+				if(L.get(i).equals(edge.getActorA()))
+					this.adjacentList.get(edge.getActorB()).remove(i);					
+			}
+		}
+	}
+	
+	public void removeMovieFromEdge (Movie deletedMovie, Person ActorA, Person ActorB) {
+		if(!adjacentList.isEmpty() && deletedMovie != null && ActorA != null && ActorB != null) {
+			List<Collaboration> edgesList = adjacentList.get(ActorA);
+			
+			for (Collaboration edge: edgesList) {
+				if(opposite(ActorA, edge).equals(ActorB)) {
+					// Il suo simmetrico
+					Collaboration symEdge = adjacentList.get(ActorB).get(adjacentList.get(ActorB).indexOf(edge));
+					if(edge.getNumMovies() > 1) { 
+						edge.deleteMovie(deletedMovie);
+						symEdge.deleteMovie(deletedMovie);
+					} else {
+						removeEdge(edge);
+						removeEdge(symEdge);
+					}
+				}				
 			}
 		}
 	}
