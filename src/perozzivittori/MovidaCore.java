@@ -613,7 +613,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		
 		//actor is "A" in A-B edges' pairs, "B" is the collaborator
 		for (int i=0; i < nCollaborators; i++)
-			collaborators[i] = actorEdges[i].getActorB();
+			collaborators[i] = 	graph.opposite(actor,actorEdges[i]);
 		
 		return collaborators;
 	}
