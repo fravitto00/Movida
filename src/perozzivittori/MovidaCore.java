@@ -611,7 +611,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		int nCollaborators = actorEdges.length;
 		Person[] collaborators = new Person[nCollaborators];
 		
-		//actor is "A" in A-B edges' pairs, "B" is the collaborator
 		for (int i=0; i < nCollaborators; i++)
 			collaborators[i] = 	graph.opposite(actor,actorEdges[i]);
 		
