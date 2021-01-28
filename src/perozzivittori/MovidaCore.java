@@ -190,9 +190,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 				// Caricamento record in TUTTE le strutture
 				Movie movie = new Movie(title, year, votes, cast, director); 
 				/** Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) */
-				deleteMovieByTitle(Ntitle); //selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, Ntitle, null);
+				deleteMovieByTitle(Ntitle);  //delete i entrambe le strutture 
 				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Insert, Ntitle, movie);
-				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Delete, Ntitle, null);
 				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, Ntitle, movie);
 				/** Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)*/
 				String Nname = null;
