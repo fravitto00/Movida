@@ -266,11 +266,18 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 
 	@Override
 	public boolean deleteMovieByTitle(String title) {
-		Object deletedObj = selectMethod(this.map, KeyType.Movie, Operation.Delete, this.normalizeString(title), null); 
-		if (deletedObj == null) return false;
+		Object deletedObjA = selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, this.normalizeString(title), null);
+		Object deletedObjB = selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Delete, this.normalizeString(title), null); 
+		
+		if (deletedObjA == null) return false;
+		
+		if(!deletedObjA.equals(deletedObjB)) {
+			System.err.println("deleteMovieByTitle(): Deleted Objects not Equal");
+			System.exit(1);
+		}
 		
 		//Aggiornamento Grafo
-		Movie deletedMovie = (Movie) deletedObj;
+		Movie deletedMovie = (Movie) deletedObjA;
 		Person[] cast = deletedMovie.getCast();
  
 		//No solo
@@ -280,6 +287,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 				for(int j=i; j < cast.length; j++)
 					graph.removeMovieFromEdge(deletedMovie, cast[i], cast[j]);
 		}
+		
 		return true;
 	}
 	
