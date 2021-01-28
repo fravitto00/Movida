@@ -1,6 +1,8 @@
 package perozzivittori;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 import movida.commons.*;
@@ -28,7 +30,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	private BTree BTPerson;
 	//TODO ne definiamo l'istanza col tipo adatto nei metodi in cui va usato (searchMost)
 	//private sortingArray sortA;
-	NonOrientedGraph graph;
+	private NonOrientedGraph graph;
+	//private List<Collaboration> collab;
 	
 	/** MovidaCore CONSTRUCTORS **/
 	public MovidaCore() {
@@ -187,7 +190,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 				// Caricamento record in TUTTE le strutture
 				Movie movie = new Movie(title, year, votes, cast, director); 
 				/** Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) */
-				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, Ntitle, null);
+				deleteMovieByTitle(Ntitle); //selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Delete, Ntitle, null);
 				selectMethod(MapImplementation.ArrayOrdinato, KeyType.Movie, Operation.Insert, Ntitle, movie);
 				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Delete, Ntitle, null);
 				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, Ntitle, movie);
@@ -205,7 +208,17 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 						Nname = this.normalizeString(p.getName());
 						selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, p);
 						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, p);
+						// aggiornamento grafo: aggiunge i nodi Person solo se già non presenti
+						this.graph.addVertex(p);
 					}
+				}
+				
+				if (cast.length > 1) {
+					//Per ogni attore, aggiunge gli archi che vanno verso gli attori successivi
+					for(i=0; i < cast.length-1; i++)
+						for(int j=i; j < cast.length; j++) {
+							graph.addMovieInEdge(movie, cast[i], cast[j]);
+						}
 				}
 
 				if(in.hasNext()) in.next(); // salta la riga vuota tra un record e un altro
@@ -312,6 +325,18 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		System.arraycopy(M, 0, returnM, 0, M.length);
 		returnM[M.length] = m;
 		return returnM;
+	}
+	private Person[] addToArray(Person[] M, Person p) {
+		Person[] returnP = new Person[M.length+1];
+		System.arraycopy(M, 0, returnP, 0, M.length);
+		returnP[M.length] = p;
+		return returnP;
+	}
+	private Collaboration[] addToArray(Collaboration[] M, Collaboration p) {
+		Collaboration[] returnC = new Collaboration[M.length+1];
+		System.arraycopy(M, 0, returnC, 0, M.length);
+		returnC[M.length] = p;
+		return returnC;
 	}
 
 	@Override
@@ -460,10 +485,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		Person[] A = new Person[0];
 		for(Person p: this.getAllPeople()) {
 			if(!p.isDirector()) {
-				Person[] tmp = new Person[A.length+1];
-				System.arraycopy(A, 0, tmp, 0, A.length);
-				tmp[A.length] = p;
-				A = tmp;
+				A = this.addToArray(A, p);
 			}
 		}
 		return A;
@@ -496,8 +518,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	}
 	
 	private class SortPairIntMovie implements Comparable<SortPairIntMovie>{
-		Integer i;
-		Movie m;
+		private Integer i;
+		private Movie m;
 		
 		public SortPairIntMovie(Integer i, Movie m) { this.i=i; this.m=m;}
 		
@@ -511,8 +533,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	}
 	
 	private class SortPairIntPerson implements Comparable<SortPairIntPerson>{
-		Integer i;
-		Person p;
+		private Integer i;
+		private Person p;
 		
 		public SortPairIntPerson(Integer i, Person p) { this.i=i; this.p=p;}
 		
@@ -619,12 +641,136 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	}
 	@Override
 	public Person[] getTeamOf(Person actor) {
-		// TODO Auto-generated method stub
-		return null;
+		Person[] team = new Person[0];
+		if(actor != null) 	return this.getTeamOfREC(actor, team);
+		else				return null;
+	}
+	private Person[] getTeamOfREC(Person actor, Person[] team) {
+		if(this.notIn(actor, team)) 
+			team = this.addToArray(team, actor);
+		for(Collaboration edge: graph.incidentEdges(actor)) {
+			Person p = graph.opposite(actor, edge);
+			if(this.notIn(p, team))
+				team = getTeamOfREC(p, team);
+		}
+		return team;
+	}
+	private boolean notIn(Person actor, Person[] team) {
+		for(Person p: team) {
+			if(p.equals(actor))
+				return false;
+		}
+		return true;
 	}
 	@Override
 	public Collaboration[] maximizeCollaborationsInTheTeamOf(Person actor) {
-		// TODO Auto-generated method stub
-		return null;
+		Person[] team = this.getTeamOf(actor); 											//array di attori facenti parte dello stesso team
+		Collaboration[] teamEdges = new Collaboration[0];								//array delle Collaboration totali del team
+		Collaboration[] MST = new Collaboration[0];										//array delle Collaboration facenti parte del Maximum Spanning Tree
+		LinkedList<LinkedList<Person>> unionFind = new LinkedList<LinkedList<Person>>();//struttura emulante la Union Find
+		int i = 0;
+		
+		if(team == null) return null;
+		if(actor == null) return null;
+		if(this.selectMethod(map, KeyType.Person, Operation.Search, actor.getName(), null) == null) return null;
+		//inizializzazione struttura UnionFind
+		for(int k=0; k<team.length; k++) {
+			unionFind.add(new LinkedList<Person>());
+			unionFind.get(k).add(team[k]);			
+		}
+		//creazione array Collaboration del team
+		boolean isTeamEdge = false;
+		
+		for(Collaboration c: this.graph.getAllEdges()){
+			for(int j=0; j<team.length; j++) {
+				if(c.getActorA().equals(team[j]) || c.getActorB().equals(team[j])) {
+					isTeamEdge = true;
+					break;
+				}
+			}
+			
+			if(isTeamEdge) 
+				teamEdges = this.addToArray(teamEdges, c);
+		}
+		//Ordinamento array Collaboration del team
+		teamEdges = sortCollabArray(teamEdges);
+		
+		// generazione MST
+		Collaboration c = null;
+		returnValues rValues = null;
+		
+		while(MST.length < team.length){
+			c = teamEdges[i];
+			rValues = isMST(unionFind, c.getActorA(), c.getActorB());
+			// [0]= 1: true/else: false; [1]= indice actorA; [2]= indice actorB;
+			if(rValues.isMST) { // c fa parte del MST
+				MST =  this.addToArray(MST, c);
+				if(unionFind.get(rValues.indexA).size() >= unionFind.get(rValues.indexB).size())
+					unionFind.get(rValues.indexA).addAll(unionFind.get(rValues.indexB));
+				else
+					unionFind.get(rValues.indexB).addAll(unionFind.get(rValues.indexA));
+			}
+			i =1+1;
+		}
+		
+		return MST;
+	}
+	
+	private returnValues isMST(LinkedList<LinkedList<Person>> unionFind,  Person a, Person b) {
+		returnValues rValues = new returnValues();
+		for(int k=0; k<unionFind.size(); k++) {
+			if(unionFind.get(k).indexOf(a) > -1 && unionFind.get(k).indexOf(b) > -1)
+				rValues.isMST = false; //return false
+			if(unionFind.get(k).indexOf(a) > -1) rValues.indexA = k;
+			if(unionFind.get(k).indexOf(b) > -1) rValues.indexB = k;	
+		}
+			
+		return rValues;
+	}
+	private Collaboration[] sortCollabArray(Collaboration[] edges) {
+		Collaboration c = null;
+		int i, 
+			nEdges = edges.length;
+		SortPairDoubleCollab[] scores = new SortPairDoubleCollab[nEdges];
+		
+		for(i=0; i<nEdges; i++) 
+			scores[i] = new SortPairDoubleCollab(edges[i].getScore(), edges[i]);
+		
+		sortingArray<SortPairDoubleCollab> scoresToSort = new sortingArray<SortPairDoubleCollab>(scores);
+		scoresToSort.sort(SortingAlgorithm.HeapSort);
+		scores = scoresToSort.getA();
+		
+		for(i=0; i<nEdges; i++)
+			edges[nEdges-1-i] = scores[i].getCollaboration();
+		
+		return edges;
+	}
+	private class returnValues{
+		
+		boolean isMST;
+		int indexA;
+		int indexB;
+		
+		public returnValues() {
+			this.isMST = true;
+			this.indexA = 0;
+			this.indexB = 0;
+		} 
+			
+	}
+	
+	private class SortPairDoubleCollab implements Comparable<SortPairDoubleCollab>{
+		private Double d;
+		private Collaboration c;
+		
+		public SortPairDoubleCollab(Double d, Collaboration c) { this.d=d; this.c=c;}
+		
+		public int compareTo(SortPairDoubleCollab sc) {
+			return d.compareTo(sc.getDouble());
+		}
+			
+		public Double getDouble() {return d;}
+		
+		public Collaboration getCollaboration() {return c;}
 	}
 }
