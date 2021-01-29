@@ -38,4 +38,15 @@ public class Person {
 		return this.director;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Person)) return false;
+		if (o == this) return true;
+		return  this.name == ((Person) o).getName();
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

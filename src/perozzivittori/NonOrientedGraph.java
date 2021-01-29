@@ -164,7 +164,7 @@ public class NonOrientedGraph implements Graph {
 		if( movie != null && actorA != null && actorB != null) {
 			// se la Collaboration esiste, aggiungo il film sia su A che su B
 			List<Collaboration> edgesList = adjacentList.get(actorA);
-			//if(!adjacentList.isEmpty()) {
+			if(edgesList != null) {
 				for (Collaboration edge: edgesList) {
 					if(opposite(actorA, edge).equals(actorB)) {
 						
@@ -175,7 +175,7 @@ public class NonOrientedGraph implements Graph {
 						return;
 					}	
 				}
-			//}
+			}
 			addEdge(actorA, actorB);
 			//new Collaboration aggiunta in TESTA -> get(0)
 			this.adjacentList.get(actorA).get(0).addMovie(movie);
