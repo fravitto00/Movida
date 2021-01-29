@@ -43,29 +43,33 @@ public class ArrayOrdinato{
 	}
 	
 	public Object delete(String k) {
-		int i,j;
 		Object deletedObj = null;
-		for(i=0; i<A.length; i++) {
-			if(k.equals(A[i].key)) {
-				deletedObj = A[i].elem;
-				for(j=i; j < A.length-1; j++)
-					A[j]=A[j+1];
-				break;
+		if(this.A.length > 0 && k != null) {
+			int i,j;
+			for(i=0; i<A.length; i++) {
+				if(k.equals(A[i].key)) {
+					deletedObj = A[i].elem;
+					for(j=i; j < A.length-1; j++)
+						A[j]=A[j+1];
+					break;
+				}
 			}
+			KeyElem[] tmp = new KeyElem[A.length-1];
+			System.arraycopy(A, 0, tmp, 0, tmp.length);
+			A = tmp;
 		}
-		KeyElem[] tmp = new KeyElem[A.length-1];
-		System.arraycopy(A, 0, tmp, 0, tmp.length);
-		A = tmp;
 		return deletedObj;
 	}
 	
 	public Object search(String k) {
-		int l=0, u=A.length-1, m; //lower, upper, m
-		while(l <= u) {
-			m =(int) (l+u) / 2;
-			if(k.equals(A[m].key)) return A[m].elem;
-			if(k.compareTo(A[m].key) <= 0) 	u = m-1;
-			else l = m+1;
+		if(this.A.length > 0 && k != null) {
+			int l=0, u=A.length-1, m; //lower, upper, m
+			while(l <= u) {
+				m =(int) (l+u) / 2;
+				if(k.equals(A[m].key)) return A[m].elem;
+				if(k.compareTo(A[m].key) <= 0) 	u = m-1;
+				else l = m+1;
+			}
 		}
 		return null;
 	}
