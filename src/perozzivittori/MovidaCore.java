@@ -296,7 +296,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		if (cast.length > 1) {
 			//Per ogni attore, elimina gli archi che vanno verso gli attori successivi (l'implementazione di removeEdge evita la simmetria dell'operazione verso i precedenti)
 			for(int i=0; i < cast.length-1; i++)
-				for(int j=i; j < cast.length; j++)
+				for(int j=i+1; j < cast.length; j++)
 					graph.removeMovieFromEdge(deletedMovie, cast[i], cast[j]);
 		}
 		

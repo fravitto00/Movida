@@ -147,13 +147,13 @@ public class NonOrientedGraph implements Graph {
 			for (Collaboration edge: edgesList) {
 				if(opposite(ActorA, edge).equals(ActorB)) {
 					// Il suo simmetrico
-					Collaboration symEdge = adjacentList.get(ActorB).get(adjacentList.get(ActorB).indexOf(edge));
+					//Collaboration symEdge = adjacentList.get(ActorB).get(adjacentList.get(ActorB).indexOf(edge));
 					if(edge.getNumMovies() > 1) { 
 						edge.deleteMovie(deletedMovie);
-						symEdge.deleteMovie(deletedMovie);
+						//symEdge.deleteMovie(deletedMovie);
 					} else {
 						removeEdge(edge);
-						removeEdge(symEdge);
+						//removeEdge(symEdge);
 					}
 				}	
 			}
@@ -168,10 +168,10 @@ public class NonOrientedGraph implements Graph {
 				for (Collaboration edge: edgesList) {
 					if(opposite(actorA, edge).equals(actorB)) {
 						
-						Collaboration symEdge = adjacentList.get(actorB).get(adjacentList.get(actorB).indexOf(edge));
+						//Collaboration symEdge = adjacentList.get(actorB).get(adjacentList.get(actorB).indexOf(edge));
 						//aggiungo il film nella lista di entrambi
 						edge.addMovie(movie);
-						symEdge.addMovie(movie);
+						//symEdge.addMovie(movie);
 						return;
 					}	
 				}
@@ -179,7 +179,7 @@ public class NonOrientedGraph implements Graph {
 			addEdge(actorA, actorB);
 			//new Collaboration aggiunta in TESTA -> get(0)
 			this.adjacentList.get(actorA).get(0).addMovie(movie);
-			this.adjacentList.get(actorB).get(0).addMovie(movie);
+			//this.adjacentList.get(actorB).get(0).addMovie(movie);
 		}
 	}
 	

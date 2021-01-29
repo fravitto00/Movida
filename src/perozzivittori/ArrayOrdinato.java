@@ -54,9 +54,11 @@ public class ArrayOrdinato{
 					break;
 				}
 			}
-			KeyElem[] tmp = new KeyElem[A.length-1];
-			System.arraycopy(A, 0, tmp, 0, tmp.length);
-			A = tmp;
+			if(deletedObj != null) {
+				KeyElem[] tmp = new KeyElem[A.length-1];
+				System.arraycopy(A, 0, tmp, 0, tmp.length);
+				A = tmp;
+			}
 		}
 		return deletedObj;
 	}

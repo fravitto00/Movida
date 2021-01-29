@@ -127,7 +127,7 @@ public class BTree implements Dizionario {
 	}
 	
 	private Object deleteFromLeaf(Node father, int childInd, Node leaf, int d) {
-		Object deletedObj = leaf.pairs[d];
+		Object deletedObj = leaf.pairs[d].elem;
 		leaf.pairs[d] = null;
 		if (leaf.m > t-1 || father == null) {														
 			leaf.m--;														//pairs counter update
