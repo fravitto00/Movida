@@ -90,13 +90,13 @@ public class NonOrientedGraph implements Graph {
 
 	@Override
 	public void addVertex(Person vertex) {
-		if(!adjacentList.isEmpty() && vertex != null)
+		if(vertex != null)
 			this.adjacentList.put(vertex, new LinkedList<Collaboration>());
 	}
 
 	@Override
 	public void addEdge(Person vertexA, Person vertexB) {
-		if(!adjacentList.isEmpty() && vertexA != null && vertexB != null) {
+		if( vertexA != null && vertexB != null) {
 			Collaboration c = new Collaboration(vertexA, vertexB);
 			//aggiungo new Collaboration in TESTA
 			this.adjacentList.get(vertexA).add(0,c); 
@@ -161,20 +161,21 @@ public class NonOrientedGraph implements Graph {
 	}
 	
 	public void addMovieInEdge(Movie movie, Person actorA, Person actorB) {
-		if(!adjacentList.isEmpty() && movie != null && actorA != null && actorB != null) {
+		if( movie != null && actorA != null && actorB != null) {
 			// se la Collaboration esiste, aggiungo il film sia su A che su B
 			List<Collaboration> edgesList = adjacentList.get(actorA);
-			
-			for (Collaboration edge: edgesList) {
-				if(opposite(actorA, edge).equals(actorB)) {
-					
-					Collaboration symEdge = adjacentList.get(actorB).get(adjacentList.get(actorB).indexOf(edge));
-					//aggiungo il film nella lista di entrambi
-					edge.addMovie(movie);
-					symEdge.addMovie(movie);
-					return;
-				}	
-			}
+			//if(!adjacentList.isEmpty()) {
+				for (Collaboration edge: edgesList) {
+					if(opposite(actorA, edge).equals(actorB)) {
+						
+						Collaboration symEdge = adjacentList.get(actorB).get(adjacentList.get(actorB).indexOf(edge));
+						//aggiungo il film nella lista di entrambi
+						edge.addMovie(movie);
+						symEdge.addMovie(movie);
+						return;
+					}	
+				}
+			//}
 			addEdge(actorA, actorB);
 			//new Collaboration aggiunta in TESTA -> get(0)
 			this.adjacentList.get(actorA).get(0).addMovie(movie);

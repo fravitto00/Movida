@@ -215,7 +215,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 				if (cast.length > 1) {
 					//Per ogni attore, aggiunge gli archi che vanno verso gli attori successivi
 					for(i=0; i < cast.length-1; i++)
-						for(int j=i; j < cast.length; j++) {
+						for(int j=i+1; j < cast.length; j++) {
 							graph.addMovieInEdge(movie, cast[i], cast[j]);
 						}
 				}
@@ -734,7 +734,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return rValues;
 	}
 	private Collaboration[] sortCollabArray(Collaboration[] edges) {
-		Collaboration c = null;
 		int i, 
 			nEdges = edges.length;
 		SortPairDoubleCollab[] scores = new SortPairDoubleCollab[nEdges];
