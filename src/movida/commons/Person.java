@@ -42,7 +42,7 @@ public class Person {
 	public boolean equals(Object o) {
 		if (!(o instanceof Person)) return false;
 		if (o == this) return true;
-		return  this.name == ((Person) o).getName();
+		return  this.name.equals(((Person) o).getName());
 	}
 	
 	@Override
