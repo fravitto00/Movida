@@ -32,6 +32,10 @@ public class Collaboration {
 		return score / movies.size();
 	}
 	
+	public void addMovie(Movie movie) {
+		movies.add(movie);
+	}
+	
 	public void deleteMovie(Movie deletedMovie) {
 		movies.remove(deletedMovie);
 	}
