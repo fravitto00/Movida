@@ -122,25 +122,39 @@ public class NonOrientedGraph implements Graph {
 	}
 
 	@Override
-	public void removeEdge(Collaboration edge) {
+	public boolean[] removeEdge(Collaboration edge) {
+		boolean[] toRemove = {false, false};
 		if(!adjacentList.isEmpty() && edge != null) {
 			List<Collaboration> edgeList = null;
+			//valori booleani che indicano la rimozione o meno dell'attore da movida 
 			edgeList = this.adjacentList.get(edge.getActorA());
-			edgeList.remove(edgeList.indexOf(edge));
+			if(edgeList.size() > 1)
+				edgeList.remove(edgeList.indexOf(edge));
+			else {
+				adjacentList.remove(edge.getActorA());
+				toRemove[0] = true;
+			}
 		/*	for(int i=0; i<edgeList.size(); i++) {
 				if(edgeList.get(i).equals(edge))
 					this.adjacentList.get(edge.getActorA()).remove(i);					
 			}*/
 			edgeList = this.adjacentList.get(edge.getActorB());
-			edgeList.remove(edgeList.indexOf(edge));
+			if(edgeList.size() > 1)
+				edgeList.remove(edgeList.indexOf(edge));
+			else {
+				adjacentList.remove(edge.getActorB());
+				toRemove[1] = true;
+			}
 		/*	for(int i=0; i<edgeList.size(); i++) {
 				if(edgeList.get(i).equals(edge))
 					this.adjacentList.get(edge.getActorB()).remove(i);					
 			}*/
 		}
+		return toRemove;
 	}
 	
-	public void removeMovieFromEdge (Movie deletedMovie, Person ActorA, Person ActorB) {
+	public boolean[] removeMovieFromEdge (Movie deletedMovie, Person ActorA, Person ActorB) {
+		boolean[] toRemove = {false, false};
 		if(!adjacentList.isEmpty() && deletedMovie != null && ActorA != null && ActorB != null) {
 			List<Collaboration> edgesList = adjacentList.get(ActorA);
 			
@@ -152,12 +166,13 @@ public class NonOrientedGraph implements Graph {
 						edge.deleteMovie(deletedMovie);
 						//symEdge.deleteMovie(deletedMovie);
 					} else {
-						removeEdge(edge);
+						toRemove = removeEdge(edge);
 						//removeEdge(symEdge);
 					}
 				}	
 			}
 		}
+		return toRemove;
 	}
 	
 	public void addMovieInEdge(Movie movie, Person actorA, Person actorB) {
