@@ -3,6 +3,9 @@ package perozzivittori;
 import java.util.LinkedList;
 import java.util.List;
 
+import movida.commons.Person;
+import movida.commons.Movie;
+
 public class BTree implements Dizionario {
 	
 	private static final int t = 2; // t >= 2
@@ -101,8 +104,9 @@ public class BTree implements Dizionario {
 		while(pos < v.m && k.compareTo(v.pairs[pos].key) > 0) pos++; //research right position
 		if(pos < v.m && k.equals(v.pairs[pos].key)) {
 			if (ht != 0) { // intern node 
+				deletedObj = v.pairs[pos].elem;
 				v.pairs[pos] = extractGreatest(v, pos, v.children[pos], ht - 1); //return v predecessor
-				deletedObj  = delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);
+				delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);
 			} else { //leaf
 				deletedObj  = deleteFromLeaf(father, childInd, v, pos);
 			}
@@ -282,6 +286,9 @@ public class BTree implements Dizionario {
     		int i;
     		for(i=0; i < v.m; i++) {
     			if(v.c > i) printTree(v.children[i], ht - 1);
+    			Object o = v.pairs[i].elem;
+    			if (o instanceof Person) System.out.println(((Person) o).getName()); 
+    			if (o instanceof Movie) System.out.println(((Movie) o).getTitle());
     		}
     		
     		//last child
