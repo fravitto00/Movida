@@ -266,8 +266,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 
 	@Override
 	public int countMovies() {
-		//Object[] Array = this.toArray(KeyType.Movie);
-		//return Array.length;
 		return this.getAllMovies().length;
 	}
 
@@ -292,15 +290,28 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		Movie deletedMovie = (Movie) deletedObjA;
 		Person[] cast = deletedMovie.getCast();
  
-		//No solo
-		if (cast.length > 1) {
-			//Per ogni attore, elimina gli archi che vanno verso gli attori successivi (l'implementazione di removeEdge evita la simmetria dell'operazione verso i precedenti)
-			for(int i=0; i < cast.length-1; i++)
-				for(int j=i+1; j < cast.length; j++)
-					graph.removeMovieFromEdge(deletedMovie, cast[i], cast[j]);
-		}
+		//Per ogni attore, elimina gli archi che vanno verso gli attori successivi (l'implementazione di removeEdge evita la simmetria dell'operazione verso i precedenti)
+		boolean[] toRemove;
+		for(int i=0; i < cast.length-1; i++)
+			for(int j=i+1; j < cast.length; j++) {
+				toRemove = graph.removeMovieFromEdge(deletedMovie, cast[i], cast[j]);
+				if(toRemove[0]) deletePersonByName(cast[i].getName());
+				if(toRemove[1]) deletePersonByName(cast[j].getName());
+			}
 		
 		return true;
+	}
+	
+	private void deletePersonByName(String name) {
+		Object deletedObjA = selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Delete, this.normalizeString(name), null);
+		Object deletedObjB = selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Delete, this.normalizeString(name), null); 
+		
+		if (deletedObjA == null) return;
+		
+		if(!deletedObjA.equals(deletedObjB)) {
+			System.err.println("deletePersonByName(): Deleted Objects not Equal");
+			System.exit(1);
+		}
 	}
 	
 	@Override
