@@ -187,7 +187,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 				int votes = Integer.parseInt(s.substring(s.indexOf(':') + 1).trim());
 				//Normalizzazione Titolo
 				String Ntitle = this.normalizeString(title);
-				// Caricamento record in TUTTE le strutture
+			// Caricamento record in TUTTE le strutture
+				// Upload Movie
 				Movie movie = new Movie(title, year, votes, cast, director); 
 				/** Se esiste un film con lo stesso titolo il record viene sovrascritto (IMovidaDB) */
 				deleteMovieByTitle(Ntitle);  //delete i entrambe le strutture 
@@ -195,13 +196,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 				selectMethod(MapImplementation.BTree, KeyType.Movie, Operation.Insert, Ntitle, movie);
 				/** Se esiste una persona con lo stesso nome non ne viene creata un'altra (IMovidaDB)*/
 				String Nname = null;
-				
+				// Upload Director
 				if(this.getPersonByName(director.getName()) == null) {
 					Nname = this.normalizeString(director.getName());
 					selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, director);
 					selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, director);
 				}
-				
+				// Upload Attori parte del Cast
 				for(Person p: cast) {
 					if(this.getPersonByName(p.getName()) == null) {
 						Nname = this.normalizeString(p.getName());
@@ -723,10 +724,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 			// [0]= 1: true/else: false; [1]= indice actorA; [2]= indice actorB;
 			if(rValues.isMST) { // c fa parte del MST
 				MST =  this.addToArray(MST, c);
-				if(unionFind.get(rValues.indexA).size() >= unionFind.get(rValues.indexB).size())
+				if(unionFind.get(rValues.indexA).size() >= unionFind.get(rValues.indexB).size()) {
 					unionFind.get(rValues.indexA).addAll(unionFind.get(rValues.indexB));
-				else
+					unionFind.remove(rValues.indexB);
+				}else{
 					unionFind.get(rValues.indexB).addAll(unionFind.get(rValues.indexA));
+					unionFind.remove(rValues.indexA);
+				}
 			}
 			i =1+1;
 		}
