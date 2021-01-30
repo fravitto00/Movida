@@ -27,5 +27,5 @@ public interface Graph {
 	
 	public void removeVertex(Person vertex);
 	
-	public void removeEdge(Collaboration edge);
+	public boolean[] removeEdge(Collaboration edge);
 }
