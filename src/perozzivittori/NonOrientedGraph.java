@@ -185,7 +185,7 @@ public class NonOrientedGraph implements Graph {
 	
 	public Collaboration[] getAllEdges() {
 		List<Collaboration> listC = new LinkedList<Collaboration>();
-		if(!adjacentList.isEmpty()) return null;
+		if(adjacentList.isEmpty()) return null;
 		for(Entry<Person, List<Collaboration>> entry : this.adjacentList.entrySet()) {
 			for(Collaboration c: entry.getValue()) {
 				if(listC.indexOf(c) == -1)

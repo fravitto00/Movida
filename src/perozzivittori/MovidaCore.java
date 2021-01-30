@@ -208,7 +208,8 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 						selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Insert, Nname, p);
 						selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Insert, Nname, p);
 						// aggiornamento grafo: aggiunge i nodi Person solo se già non presenti
-						this.graph.addVertex(p);
+						if(cast.length > 1)
+							this.graph.addVertex(p);
 					}
 				}
 				
@@ -678,7 +679,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		
 		if(team == null) return null;
 		if(actor == null) return null;
-		if(this.selectMethod(map, KeyType.Person, Operation.Search, actor.getName(), null) == null) return null;
+		if(this.selectMethod(map, KeyType.Person, Operation.Search, this.normalizeString(actor.getName()), null) == null) return null;
 		//inizializzazione struttura UnionFind
 		for(int k=0; k<team.length; k++) {
 			unionFind.add(new LinkedList<Person>());
