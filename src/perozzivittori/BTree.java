@@ -2,22 +2,30 @@ package perozzivittori;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import movida.commons.Person;
 import movida.commons.Movie;
 
 public class BTree implements Dizionario {
-	
-	private static final int t = 2; // t >= 2
 
-	private Node root;	//root of the B-tree
-	private int height;	//height of the B-tree 	
+	/**
+	 * Dati del BTree
+	 */
+	private static final int t = 2; // Grado BTree t >= 2
+
+	private Node root;		// Radice
+	private int height;		// Altezza 	
 	
+	/**
+	 * Costruttore
+	 */
 	public BTree() {
-        root = new Node();
-        height = 0;
-    }
+        	root = new Node();
+        	height = 0;
+    	}
 	
+	/**
+	 * Metodo pubblico per l'operazione di Search
+	 */
 	@Override
 	public Object search(String k) {
 		return search(root, k, height);
