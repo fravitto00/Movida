@@ -11,16 +11,26 @@ import java.util.Map.Entry;
 
 public class NonOrientedGraph implements Graph {
 	
-	//Lista di Adiacenza sui nomi degli attori
+	//Lista di Adiacenza degli attori, lista di Collaboration come archi
 	private Map<Person, List<Collaboration>> adjacentList = new HashMap<>();
 	
+	/**
+	 * Calcola il numero dei vertici
+	 * 
+	 * @return il numero dei vertici
+	 */
 	@Override
 	public int countVertices() {
 		if (!adjacentList.isEmpty())
 			return adjacentList.size();
 		else return 0;
 	}
-
+	
+	/**
+	 * Calcola il numero degli archi
+	 * 
+	 * @return il numero degli archi
+	 */
 	@Override
 	public int countEdges() {
 		int edges = 0;
@@ -28,17 +38,32 @@ public class NonOrientedGraph implements Graph {
 			for(Person vertex : adjacentList.keySet())
 				edges += adjacentList.get(vertex).size();
 		}
+		
 		//Grafo non orientato, eliminazione dei duplicati 
 		return edges/2;
 	}
 
+	/**
+	 * Calcola il grado di un vertice, ossia il numero di archi uscenti/entranti
+	 * 
+	 * @param vertex il vertice
+	 * 
+	 * @return il numero di archi
+	 */
 	@Override
 	public int degree(Person vertex) {
 		if (!adjacentList.isEmpty() && vertex != null)
 			return adjacentList.get(vertex).size();
 		else return 0;
 	}
-
+	
+	/**
+	 * Acquisizione degli archi incidenti da/a un vertice
+	 * 
+	 * @param vertex il vertice
+	 * 
+	 * @return array di archi incidenti
+	 */
 	@Override
 	public Collaboration[] incidentEdges(Person vertex) {
 		Collaboration[] edges = null;
@@ -51,7 +76,14 @@ public class NonOrientedGraph implements Graph {
 		}
 		return edges;
 	}
-
+	
+	/**
+	 * Acquisizione degli estremi di un arco
+	 * 
+	 * @param edge l'arco
+	 * 
+	 * @return i due vertici estremi dell'arco
+	 */
 	@Override
 	public Person[] endVertices(Collaboration edge) {
 		Person[] people = null;
@@ -62,7 +94,15 @@ public class NonOrientedGraph implements Graph {
 		}
 		return people;
 	}
-
+	
+	/**
+	 * Acquisizione del vertice opposto, dato un vertice e un suo arco
+	 * 
+	 * @param vertex il vertice
+	 * @param edge l'arco
+	 * 
+	 * @return il vertice opposto
+	 */
 	@Override
 	public Person opposite(Person vertex, Collaboration edge) {
 		Person opposite = null;
@@ -153,25 +193,34 @@ public class NonOrientedGraph implements Graph {
 		return toRemove;
 	}
 	
+	/**
+	 * 
+	 * Eliminazione di un Movie dal grafo, ossia da una Collaboration
+	 * 
+	 * @param deletedMovie il Movie da eliminare
+	 * @param ActorA l'attore A della Collaboration
+	 * @param ActorB l'attore B della Collaboration
+	 * 
+	 * @return coppia di valori booleani che indicano se gli attori vanno eliminati dalle strutture dati (non hanno Collaboration, ossia non recitano in nessun Movie)
+	 */
 	public boolean[] removeMovieFromEdge (Movie deletedMovie, Person ActorA, Person ActorB) {
 		boolean[] toRemove = {false, false};
+		
 		if(!adjacentList.isEmpty() && deletedMovie != null && ActorA != null && ActorB != null) {
+			// La lista delle Collaboration dell'attore A
 			List<Collaboration> edgesList = adjacentList.get(ActorA);
 			
-			for (Collaboration edge: edgesList) {
+			for (int i=0; i < edgesList.size(); i++) {
+				Collaboration edge = edgesList.get(i);
 				if(opposite(ActorA, edge).equals(ActorB)) {
-					// Il suo simmetrico
-					//Collaboration symEdge = adjacentList.get(ActorB).get(adjacentList.get(ActorB).indexOf(edge));
-					if(edge.getNumMovies() > 1) { 
-						edge.deleteMovie(deletedMovie);
-						//symEdge.deleteMovie(deletedMovie);
-					} else {
-						toRemove = removeEdge(edge);
-						//removeEdge(symEdge);
-					}
+					if(edge.getNumMovies() > 1)
+						edge.deleteMovie(deletedMovie);	// La Collaboration ha più di un Movie, quindi viene solamente aggiornata
+					else
+						toRemove = removeEdge(edge);	// La Collaboration ha un solo Movie, quindi viene eliminata
 				}	
 			}
 		}
+		
 		return toRemove;
 	}
 	

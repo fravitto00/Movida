@@ -38,6 +38,10 @@ public class Person {
 		return this.director;
 	}
 	
+	/**
+	 * Redefinizione del metodo equals (e con sé hashCode) affinchè il metodo Map.get(Object key),
+	 * utilizzato in NonOrientedGraph, ritorni i valori desiderati (e non null)
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Person)) return false;

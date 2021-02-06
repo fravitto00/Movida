@@ -2,8 +2,8 @@ package perozzivittori;
 
 import java.util.LinkedList;
 import java.util.List;
-import movida.commons.Person;
-import movida.commons.Movie;
+//import movida.commons.Person;
+//import movida.commons.Movie;
 
 public class BTree implements Dizionario {
 
@@ -55,6 +55,8 @@ public class BTree implements Dizionario {
 	 * 
 	 * @return record con chiave k se esistente, null altrimenti
 	 */
+	
+	@Override
 	public Object search(String k) {
 		if (k != null) return search(root, k, height);
 		return null;
@@ -208,7 +210,7 @@ public class BTree implements Dizionario {
 			if (ht != 0) { 														 // Nodo Interno
 				deletedObj = v.pairs[pos].elem;									 // Il record eliminato, per il return
 				v.pairs[pos] = extractGreatest(v, pos, v.children[pos], ht - 1); // Ritorna il predecessore di v
-				delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);
+				delete(v, pos, v.children[pos], v.pairs[pos].key, ht - 1);		 // Eliminazione del predecessore
 			} else { 															 // Foglia
 				deletedObj  = deleteFromLeaf(father, childInd, v, pos);
 			}
@@ -218,7 +220,7 @@ public class BTree implements Dizionario {
 		if (ht != 0 && deletedObj==null) 
 			deletedObj = delete(v, pos, v.children[pos], k, ht - 1);
 		
-		// Se il nodo attuale ha più coppie del numero consentito, ribilanciamento
+		// Se il nodo attuale ha meno coppie del numero consentito, ribilanciamento
 		if(v.m < t-1 && father != null)
 			balance(father, childInd, v, t-2);
 		
@@ -289,30 +291,34 @@ public class BTree implements Dizionario {
 			leftSibling.pairs[leftSibling.m-1] = null;
 			leftSibling.m--;
 			
-			// Nodo interno (se ha figli)
+			// Nodo interno (se v ha figli)
 			if(v.c > 0) {
 				for(int i=0; i < v.c; i++) v.children[i+1] = v.children[i];	// Operazione di slide sui figli
 				v.c++;
 				leftSibling.c--;
-				v.children[0] = leftSibling.children[v.c];					// Il nodo v riceve il figlio dal fratello di sinistra
+				v.children[0] = leftSibling.children[v.c];					// Il nodo v riceve il figlio dal fratello di sinistra (Rotazione)
 				leftSibling.children[v.c] = null;
 			}
 			redistribution = true;
 		}
 			
 		// Redistribuzione da destra
-		if (rightSibling != null && rightSibling.m > t-1 ) {						//redistribution from right sibling
-			for(int i=v.m-1; i > d; i--) v.pairs[i-1] = v.pairs[i];					// Operazione di slide se d non è l'ultima coppia (v.m-1)
-			if (v.m == 0) v.m++;														//pairs swap with right sibling
-			v.pairs[v.m-1] = father.pairs[childInd];								// v is invalid in case of t=2
-			father.pairs[childInd] = rightSibling.pairs[0];							//pairs swap
+		if (rightSibling != null && rightSibling.m > t-1 ) {
+			for(int i=v.m-1; i > d; i--) v.pairs[i-1] = v.pairs[i];		// Operazione di slide se d non è l'ultima coppia (v.m-1)
+			if (v.m == 0) v.m++;										// Se t=2, in caso di precedente fusione, il nodo padre (v) può raggiungere quota 0 coppie
+			v.pairs[v.m-1] = father.pairs[childInd];					// Coppia dal padre
+			father.pairs[childInd] = rightSibling.pairs[0];				// Il padre riceve la coppia dal fratello di destra
 			rightSibling.m--;
-			for(int i=0; i < rightSibling.m; i++) rightSibling.pairs[i] = rightSibling.pairs[i+1];			 //slide operation for sibling
-			if(v.c > 0) {																					 //internal node (with children)
-				v.children[v.c] = rightSibling.children[0]; 												 //sottoalbero passing with rotation
+			for(int i=0; i < rightSibling.m; i++) 
+				rightSibling.pairs[i] = rightSibling.pairs[i+1]; 		// Operazione di slide sul fratello
+			
+			// Nodo interno (se v ha figli)
+			if(v.c > 0) {
+				v.children[v.c] = rightSibling.children[0]; 			   // Il nodo v riceve il figlio dal fratello di destra (Rotazione)
 				v.c++;	
 				rightSibling.c--;
-				for(int i=0; i < rightSibling.c; i++) rightSibling.children[i] = rightSibling.children[i+1]; //slide children
+				for(int i=0; i < rightSibling.c; i++) 
+					rightSibling.children[i] = rightSibling.children[i+1]; // Operazione di slide sui figli
 			}
 			redistribution = true;
 		}
@@ -324,64 +330,74 @@ public class BTree implements Dizionario {
 		boolean fusion = false;
 		
 		// Fusione a sinistra
-		if (leftSibling != null) {																			
-			leftSibling.pairs[leftSibling.m] = father.pairs[childInd-1];	//pair from father
+		if (leftSibling != null) {										
+			// Coppia dal padre (può causare sbilanciamenti)
+			leftSibling.pairs[leftSibling.m] = father.pairs[childInd-1];
 			leftSibling.m++;
 			father.pairs[childInd-1] = null;
 			int k = 0;			
+			
+			// Spostamento coppie
 			for(int i=0; i < v.m-1; i++) {
-				if(i==d) k++;															//double index to avoid making another slide operation on v pairs
-				leftSibling.pairs[i+leftSibling.m] = v.pairs[k];						//pairs transfer to left sibling
+				if(i==d) k++;												// Doppio indice per evitare un altro slide
+				leftSibling.pairs[i+leftSibling.m] = v.pairs[k];			// Il fratello di sinistra acquisisce le coppie di v
 				k++; 
 			}
 			int x = 1;
 			if (v.m == 0) x--;
 			leftSibling.m += v.m - x;	
 			
-			//slide on father
+			// Slide sul padre
 			father.m--; father.c--;
 			for(int i=childInd-1; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
 			for(int i=childInd; i < father.c; i++) father.children[i] = father.children[i+1];
 			
-			if(v.c > 0) {																			//internal node (with children)
-				for(int i=0; i < v.c; i++) leftSibling.children[i+leftSibling.c] = v.children[i];	//acquisition children
+			// Nodo interno (se v ha figli)
+			if(v.c > 0) {
+				for(int i=0; i < v.c; i++) 
+					leftSibling.children[i+leftSibling.c] = v.children[i];	// Acquisizione figli
 				leftSibling.c += v.c;
 			}
 			fusion = true;
 				
 		// Fusione a destra	
 		} else if (rightSibling != null){
-			if (v.m == 0) v.m++;																//internal node with 0 (t-2) keys
-			for(int i=0; i < v.m; i++) rightSibling.pairs[i+v.m] = rightSibling.pairs[i];	//slide operation on sibling (right)
+			if (v.m == 0) v.m++;
+			for(int i=0; i < v.m; i++) 
+				rightSibling.pairs[i+v.m] = rightSibling.pairs[i];	// Slide sul fratello di destra
 			
-			//pair from father
+			// Coppia dal padre
 			rightSibling.pairs[v.m-1] = father.pairs[childInd]; 
 			rightSibling.m++;
 
-			//pairs transfer to right sibling
+			// Spostamento coppie
 			int k = 0;
 			for(int i=0; i < v.m-1; i++) {
 				if(i==d) k++;															
-				rightSibling.pairs[i] = v.pairs[k];
+				rightSibling.pairs[i] = v.pairs[k]; // Il fratello di destra acquisisce le coppie di v
 				k++;
 			}
 			rightSibling.m += v.m - 1;
 			
-			//slide on father
+			// Slide sul padre
 			father.pairs[childInd] = null;
 			father.m--; father.c--;
 			for(int i=childInd; i < father.m; i++) father.pairs[i] = father.pairs[i+1];
 			for(int i=childInd; i < father.c; i++) father.children[i] = father.children[i+1];
-			if(v.c > 0) {																						//internal node (with children)
-				for(int i=0; i < rightSibling.c; i++) rightSibling.children[rightSibling.c-1+v.c-i] = rightSibling.children[rightSibling.c-1-i];	//slide children
-				for(int i=0; i < v.c; i++) rightSibling.children[i] = v.children[i];							//acquisition children
+			
+			// Nodo interno (se v ha figli)
+			if(v.c > 0) {
+				for(int i=0; i < rightSibling.c; i++) 
+					rightSibling.children[rightSibling.c-1+v.c-i] = rightSibling.children[rightSibling.c-1-i];	// Slide sui figli
+				for(int i=0; i < v.c; i++) rightSibling.children[i] = v.children[i];							// Acquisizione figli
 				rightSibling.c += v.c;
 			}
 			fusion = true;
 		}
 			
-		//root vanishes
+		// Eliminazione della radice
 		if (fusion && father==root && father.m==0) {
+			// Può esistere un solo altro fratello (father.m era 1) 
 			if(leftSibling != null)	root = leftSibling;
 			if(rightSibling != null)root = rightSibling;
 			height--;
