@@ -557,6 +557,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return A;
 	}
 	
+	/**
+	 * Esegue il casting di un array di tipo Object in uno di tipo Movie
+	 * 
+	 * @param array l'array su cui eseguire il casting
+	 * @return l'array di tipo Movie
+	 */
 	private Movie[] castToMovie(Object[] array) {
 		Movie[] returnArray = new Movie[array.length];
 		for (int i=0; i < array.length; i++)
@@ -564,6 +570,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return returnArray;
 	}
 	
+	/**
+	 * Esegue il casting di un array di tipo Object in uno di tipo Person
+	 * 
+	 * @param array l'array su cui eseguire il casting
+	 * @return l'array di tipo Person
+	 */
 	private Person[] castToPerson(Object[] array) {
 		Person[] returnArray = new Person[array.length];
 		for (int i=0; i < array.length; i++)
@@ -571,18 +583,33 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return returnArray;
 	}
 	
+	/**
+	 * Compone l'array ordinato
+	 * 
+	 * @param N il numero di Movie di cui dev'essere composto l'array
+	 * @param nMovies il numero di Movie presenti nell'array ordinato
+	 * @param pairedArray l'array ordinato
+	 * @return l'array di N Movie in ordine decrescente
+	 */
 	private Movie[] buildArray(Integer N, int nMovies, SortPairIntMovie[] pairedArray) {
 		Movie[] returnArray = null;
-		if(nMovies >= N)	returnArray = new Movie[N];
-		else				{returnArray = new Movie[nMovies]; N = nMovies;}
+		if(nMovies >= N)
+			returnArray = new Movie[N];
+		else {
+			returnArray = new Movie[nMovies];
+			N = nMovies;
+		}
 		
-		//ordine decrescente (mostRecent e mostVoted)
+		// Ordine decrescente (mostRecent e mostVoted)
 		for(int i=0; i < N; i++)
 			returnArray[i] = pairedArray[nMovies-1-i].getMovie();
 		
 		return returnArray;
 	}
 	
+	/**
+	 * Classe che implementa una coppia intero-Movie per effettuare il sorting
+	 */
 	private class SortPairIntMovie implements Comparable<SortPairIntMovie>{
 		private Integer i;
 		private Movie m;
@@ -598,6 +625,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		public Movie getMovie() {return m;}
 	}
 	
+	/**
+	 * Classe che implementa una coppia intero-Person per effettuare il sorting
+	 */
 	private class SortPairIntPerson implements Comparable<SortPairIntPerson>{
 		private Integer i;
 		private Person p;
@@ -615,6 +645,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		public Person getPerson() {return p;}
 	}
 	
+	/**
+	 * Esegue l'operazione toArray() sulla struttura dati in uso
+	 * 
+	 * @param ktype il tipo di record, Movie/Person
+	 * @return l'array di record Movie/Person
+	 */
 	private Object[] toArray(KeyType ktype) {
 		Object[] r = null;
 		switch(this.map) {
@@ -704,12 +740,14 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		
 		return collaborators;
 	}
+	
 	@Override
 	public Person[] getTeamOf(Person actor) {
 		Person[] team = new Person[0];
 		if(actor != null) 	return this.getTeamOfREC(actor, team);
 		else				return null;
 	}
+	
 	/**
 	 * Funzione ricorsiva che si occupa di formare l'array di Person facenti parte dello stesso team
 	 * se l'attore non è già presente nell'array lo inserisce
