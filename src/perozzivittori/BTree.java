@@ -75,7 +75,8 @@ public class BTree implements Dizionario {
 			else return search(v.children[pos], k, ht-1);
 		}
 	}
-
+	
+	@Override
 	public void insert(String key, Object e) {
 		Node tmp = insert(root, key, e, height);
 		if (tmp == null) return;
@@ -163,7 +164,7 @@ public class BTree implements Dizionario {
 		return tmp;
 	}
 	
-	
+	@Override
     public Object delete(String key) {
     	if (key != null) return delete(null, 0, root, key, height);
     	return null;
