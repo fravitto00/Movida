@@ -2,7 +2,6 @@ package perozzivittori;
 
 import java.io.*;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 
 import movida.commons.*;
@@ -325,7 +324,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	public Person getPersonByName(String name) {
 		return (Person)selectMethod(this.map, KeyType.Person, Operation.Search, this.normalizeString(name), null);
 	}
-
+	
 	@Override
 	public Movie[] getAllMovies() {
 		return castToMovie(toArray(KeyType.Movie));
