@@ -14,11 +14,6 @@ public class NonOrientedGraph implements Graph {
 	//Lista di Adiacenza degli attori, lista di Collaboration come archi
 	private Map<Person, List<Collaboration>> adjacentList = new HashMap<>();
 	
-	/**
-	 * Calcola il numero dei vertici
-	 * 
-	 * @return il numero dei vertici
-	 */
 	@Override
 	public int countVertices() {
 		if (!adjacentList.isEmpty())
@@ -26,11 +21,6 @@ public class NonOrientedGraph implements Graph {
 		else return 0;
 	}
 	
-	/**
-	 * Calcola il numero degli archi
-	 * 
-	 * @return il numero degli archi
-	 */
 	@Override
 	public int countEdges() {
 		int edges = 0;
@@ -43,13 +33,6 @@ public class NonOrientedGraph implements Graph {
 		return edges/2;
 	}
 
-	/**
-	 * Calcola il grado di un vertice, ossia il numero di archi uscenti/entranti
-	 * 
-	 * @param vertex il vertice
-	 * 
-	 * @return il numero di archi
-	 */
 	@Override
 	public int degree(Person vertex) {
 		if (!adjacentList.isEmpty() && vertex != null)
@@ -57,13 +40,6 @@ public class NonOrientedGraph implements Graph {
 		else return 0;
 	}
 	
-	/**
-	 * Acquisizione degli archi incidenti da/a un vertice
-	 * 
-	 * @param vertex il vertice
-	 * 
-	 * @return array di archi incidenti
-	 */
 	@Override
 	public Collaboration[] incidentEdges(Person vertex) {
 		Collaboration[] edges = null;
@@ -77,13 +53,6 @@ public class NonOrientedGraph implements Graph {
 		return edges;
 	}
 	
-	/**
-	 * Acquisizione degli estremi di un arco
-	 * 
-	 * @param edge l'arco
-	 * 
-	 * @return i due vertici estremi dell'arco
-	 */
 	@Override
 	public Person[] endVertices(Collaboration edge) {
 		Person[] people = null;
@@ -95,14 +64,6 @@ public class NonOrientedGraph implements Graph {
 		return people;
 	}
 	
-	/**
-	 * Acquisizione del vertice opposto, dato un vertice e un suo arco
-	 * 
-	 * @param vertex il vertice
-	 * @param edge l'arco
-	 * 
-	 * @return il vertice opposto
-	 */
 	@Override
 	public Person opposite(Person vertex, Collaboration edge) {
 		Person opposite = null;
