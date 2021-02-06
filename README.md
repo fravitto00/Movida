@@ -1,5 +1,8 @@
 # Movida
-
+## Gruppo
+Il gruppo di lavoro è formato da:
+- Perozzi Marco | (email) | (matricola)
+- Vittori Francesco | francesco.vittori5@studio.unibo.it | 0000923487
 ## Strutture Dati
 Abbiamo iniziato lo sviluppo delle strutture dati utilizzando Java Generics e quindi l'interfaccia Comparable.
 Notando però che nei metodi dalle interfacce, implementati in MovidaCore, title e name erano di tipo String
