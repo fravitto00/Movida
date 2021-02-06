@@ -174,10 +174,7 @@ public class NonOrientedGraph implements Graph {
 				adjacentList.remove(edge.getActorA());
 				toRemove[0] = true;
 			}
-		/*	for(int i=0; i<edgeList.size(); i++) {
-				if(edgeList.get(i).equals(edge))
-					this.adjacentList.get(edge.getActorA()).remove(i);					
-			}*/
+			
 			edgeList = this.adjacentList.get(edge.getActorB());
 			if(edgeList.size() > 1)
 				edgeList.remove(edgeList.indexOf(edge));
@@ -185,10 +182,6 @@ public class NonOrientedGraph implements Graph {
 				adjacentList.remove(edge.getActorB());
 				toRemove[1] = true;
 			}
-		/*	for(int i=0; i<edgeList.size(); i++) {
-				if(edgeList.get(i).equals(edge))
-					this.adjacentList.get(edge.getActorB()).remove(i);					
-			}*/
 		}
 		return toRemove;
 	}
@@ -209,12 +202,12 @@ public class NonOrientedGraph implements Graph {
 		if(!adjacentList.isEmpty() && deletedMovie != null && ActorA != null && ActorB != null) {
 			// La lista delle Collaboration dell'attore A
 			List<Collaboration> edgesList = adjacentList.get(ActorA);
-			
-			for (int i=0; i < edgesList.size(); i++) {
+
+			for (int i=0; i<edgesList.size(); i++) {
 				Collaboration edge = edgesList.get(i);
 				if(opposite(ActorA, edge).equals(ActorB)) {
 					if(edge.getNumMovies() > 1)
-						edge.deleteMovie(deletedMovie);	// La Collaboration ha più di un Movie, quindi viene solamente aggiornata
+						edge.deleteMovie(deletedMovie);	// La Collaboration ha piï¿½ di un Movie, quindi viene solamente aggiornata
 					else
 						toRemove = removeEdge(edge);	// La Collaboration ha un solo Movie, quindi viene eliminata
 				}	
