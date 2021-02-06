@@ -19,10 +19,6 @@ public interface Graph {
 	public int countEdges();
 	
 	/**
-	* I vertici sono rappresentati dagli attori e gli archi da Collaboration
-	*/
-	
-	/**
 	 * Calcola il grado di un vertice, ossia il numero di archi uscenti/entranti
 	 * 
 	 * @param vertex il vertice
