@@ -75,14 +75,7 @@ public class NonOrientedGraph implements Graph {
 		}
 		return opposite;
 	}
-	/**
-	 * Verifica se 2 vertici sono adiacenti (fanno parte dello stesso arco Collaboration)
-	 * l'arco può essere (vertexA, vertexB) o viceversa, (vertexB, vertexA)
-	 * 
-	 * @param vertexA primo vertice
-	 * @param vertexB secondo vertice
-	 * @return true se i 2 vertici sono adiacenti, false altrimenti
-	 */
+	
 	@Override
 	public boolean areAdjacent(Person vertexA, Person vertexB) {
 		List<Collaboration> edgesList = null;
@@ -95,23 +88,13 @@ public class NonOrientedGraph implements Graph {
 		}
 		return false;
 	}
-	/**
-	 * Aggiunge un nuovo vertice al grafo e istanzia il suo insieme di archi
-	 * 
-	 * @param vertex vertice da aggiungere all'arco
-	 */
+	
 	@Override
 	public void addVertex(Person vertex) {
 		if(vertex != null)
 			this.adjacentList.put(vertex, new LinkedList<Collaboration>());
 	}
-	/**
-	 * Aggiunge un nuovo arco al grafo, crea l'arco e aggiunge la stessa istanza dell'oggetto Collaboration
-	 * a entrambi i vertici dell'arco
-	 * 
-	 * @param vertexA vertice dell'arco
-	 * @param vertexB vertice dell'arco
-	 */
+	
 	@Override
 	public void addEdge(Person vertexA, Person vertexB) {
 		if( vertexA != null && vertexB != null) {
@@ -121,11 +104,7 @@ public class NonOrientedGraph implements Graph {
 			this.adjacentList.get(vertexB).add(0,c);
 		}
 	}
-	/**
-	 * 
-	 * 
-	 * @param vertex
-	 */
+
 	@Override
 	public void removeVertex(Person vertex) {
 		if(!adjacentList.isEmpty() && vertex != null) {
