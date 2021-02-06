@@ -13,6 +13,5 @@ della memoria per degli array.
 Per quanto riguarda, invece, il tipo di dato dell'elemento abbiamo optato per la scelta "generica" del tipo Object.
 
 ## Estensione Grafo
-/**
-	* I vertici sono rappresentati dagli attori e gli archi da Collaboration
-	*/
+Abbiamo implementato il grafo tramite lista di adiacenza, implementata tramite un HashMap con chiavi di tipo Person (attori) e
+come elementi liste di tipo Collaboration (classe utilizzata come archi).
