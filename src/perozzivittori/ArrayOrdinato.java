@@ -2,7 +2,7 @@ package perozzivittori;
 
 public class ArrayOrdinato{
 	
-	protected KeyElem[] A = new KeyElem[0];
+	protected KeyElem[] A ;
 	
 	public static class KeyElem {
 		public String key;
@@ -13,7 +13,7 @@ public class ArrayOrdinato{
 			this.elem = e;
 		}
 	}
-	public ArrayOrdinato(){}
+	public ArrayOrdinato(){this.A= new KeyElem[0];}
 	/*
 	public ArrayOrdinato(Object[] Arr) {
 		this.A = (KeyElem[]) Arr;
@@ -30,6 +30,15 @@ public class ArrayOrdinato{
 	}
 	*/
 	//*****Implementazione tramite Array statico****
+	/**
+	 * La prima operazione è aumentare di una unità la dimensione dell'array
+	 * Si inserisce l'oggetto coppia (chiave, elemento) nella giusta posizione così da mantenere l'ordine non decrescente dell'array
+	 * Individuata la posizione tutti i successivi subiscono lo shift verso destra cossicchè si liberi la posizione scelta,
+	 * l'oggetto è quindi inserito all'indice individuato
+	 * 
+	 * @param k Stringa che identifica l'oggetto
+	 * @param e Object che trasporta l'informazione della coppia
+	 */
 	public void insert(String k, Object e) {
 		int i,j;
 		KeyElem[] tmp = new KeyElem[A.length+1];
@@ -41,7 +50,14 @@ public class ArrayOrdinato{
 			A[j] = A[j-1];
 		A[i] = new KeyElem(k, e);	
 	}
-	
+	/**
+	 * Elimina l'oggetto coppia dall'array in base alla chiave, avviene una ricerca sequenziale a partire dall'inizio
+	 * in caso positivo, è eseguito lo shift verso sinistra di tutti gli elementi successivi ad esso così da eliminare loggetto
+	 * infine la dimensione dell'array è ristretto di una unità solo in caso di eliminazione
+	 * 
+	 * @param k stringa che identifica l'oggetto da eliminare
+	 * @return la parte elemento Object dell'oggetto eliminato, altrimenti null oggetto non trovato
+	 */
 	public Object delete(String k) {
 		Object deletedObj = null;
 		if(this.A.length > 0 && k != null) {
@@ -62,7 +78,14 @@ public class ArrayOrdinato{
 		}
 		return deletedObj;
 	}
-	
+	/**
+	 * Ricerca in base alla chiave stringa. La ricerca è dicotomica: il campo si dimezza ad ogni iterazione
+	 * si cerca l'oggetto nel centro del range di ricerca, se la chiave dell'oggetto da ricercare è inferiore all'oggetto nel 
+	 * centro, si sceglie come nuovo range la parte sinistra, altrimenti si cerca a destra del centro
+	 * 
+	 * @param k stringa che identifica l'oggetto
+	 * @return l'elemento se trovato, null altrimenti
+	 */
 	public Object search(String k) {
 		if(this.A.length > 0 && k != null) {
 			int l=0, u=A.length-1, m; //lower, upper, m
@@ -75,11 +98,12 @@ public class ArrayOrdinato{
 		}
 		return null;
 	}
-	
-	public int size() {
-		return A.length;
-	}
-	
+	/**
+	 * A partire dagli oggetti coppia, viene creato un array composto dalla sola parte elemento di tutti gli oggetti
+	 * contenuti nell'array.
+	 * 
+	 * @return array di Object 
+	 */
 	public Object[] toArray() {
 		Object[] O = new Object[A.length];
 		for(int i=0; i<A.length; i++) {

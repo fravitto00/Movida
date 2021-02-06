@@ -8,37 +8,53 @@ import java.util.Scanner;
 import movida.commons.*;
 
 public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMovidaCollaborations {
+	/**
+	 * lista di operazioni possibili sulle strutture dati
+	 */
 	public enum Operation{
 		Insert,
 		Search,
 		Delete;
 	}
+	/**
+	 * identi
+	 */
 	public enum KeyType {
 		Movie,
 		Person;
 	}
 	/**
-	 * alg : enum SortingAlgorithm value
-	 * map : enum MapImplementation value
+	 * alg : valore enum SortingAlgorithm 
+	 * map : valore enum MapImplementation 
 	 */
 	private SortingAlgorithm alg;
 	private MapImplementation map;
-	/****/
+	/**
+	 * strutture dati implementate, una per ogni tipo di dato memorizzato: Movie, Person
+	 */
 	private ArrayOrdinato ArrMovie;
 	private ArrayOrdinato ArrPerson;
 	private BTree BTMovie;
 	private BTree BTPerson;
 	//TODO ne definiamo l'istanza col tipo adatto nei metodi in cui va usato (searchMost)
-	//private sortingArray sortA;
+	/**
+	 * struttura dati rappresentante il grafo di attori
+	 */
 	private NonOrientedGraph graph;
-	//private List<Collaboration> collab;
 	
-	/** MovidaCore CONSTRUCTORS **/
+	
+	/* MovidaCore CONSTRUCTORS */
 	public MovidaCore() {
 		resetMovidaCore();
 		this.alg = null;
 		this.map = null;
 	}
+	/**
+	 * scelta dell'algoritmo e della struttura dati da utilizzare nel costruttore
+	 * 
+	 * @param a algoritmo da implementare
+	 * @param m struttura dati da utilizzare
+	 */
 	public MovidaCore(SortingAlgorithm a, MapImplementation m) {
 		if(!setSort(a) || !setMap(m)) {
 			System.err.println("SortingAlgorithm or MapImplementation value: invalid");
@@ -51,9 +67,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		//TODO String come tipo Comparable
 		this.BTMovie 	= new BTree();
 		this.BTPerson 	= new BTree();
-		//this.sortA		= null;
 		this.graph 		= new NonOrientedGraph();
 	}
+	/**
+	 * utilizzato per resettare l'applicativo e tutti i dati memorizzati
+	 */
 	private void resetMovidaCore() {
 		this.ArrMovie 	= null;
 		this.ArrPerson 	= null;
@@ -63,8 +81,20 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		this.graph		= null;
 	}
 	
-	/** MovidaCore Methods **/
+	/* MovidaCore Methods **/
 	//TODO String come tipo Comparable
+	/**
+	 * metodo che permette di operare sulle strutture dati scegliendo integrandole 
+	 * 
+	 * @param m struttura dati sulla quale operare
+	 * @param ktype tipo di dato memorizzato dalla struttura
+	 * @param op tipo di operazione da eseguire sulla struttura
+	 * @param key chiave dell'elemento sul quale va eseguita l'operazione(insert, search, delete)
+	 * @param e elemento da inserire nella struttura se op=insert, null altrimenti
+	 * 
+	 * @return elemento Object restituito da search o Object eliminato da delete, null se non trovato in entrambi i casi
+	 * 			search non ha return
+	 */
 	private Object selectMethod(MapImplementation m,KeyType ktype, Operation op, String key, Object e) {
 		switch(m) {
 			case ArrayOrdinato:
@@ -147,7 +177,15 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		}
 		return null;
 	}
-	
+	/**
+	 * applica la normalizzazione alla stringa, chiave degli oggetti. 
+	 * La stringa è in carattere minuscolo con eventuali numeri e caratteri accentati, 
+	 * i caratteri non-word e gli spazi vuoti sono eliminati
+	 * 
+	 * @param s stringa da normalizzare
+	 * 
+	 * @return stringa cui è stata applicata la normalizzazione
+	 */
 	private String normalizeString(String s) { 
 		String accents = "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ";
 		s = s.replaceAll("[^\\w["+accents+"]]", "").toLowerCase(); 
@@ -155,10 +193,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return s;
 	}
 	
-	/**
-	 * IMovidaDB
-	 */
+	/* IMovidaDB */
 	
+	@Override
 	public void loadFromFile(File f) {
 		try {
 			Scanner in = new Scanner(f);
@@ -336,10 +373,14 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return castToPerson(toArray(KeyType.Person));
 	}
 	
+	/* IMovidaSearch */
 	/**
-	 * IMovidaSearch
+	 * Incrementa la dimensione dell'array di 1 e inserisce in coda l'elemento, res
+	 * 
+	 * @param M array da modificare a al quale aggiungere l'oggetto
+	 * @param m oggetto inserito in coda all'array
+	 * @return Array più grande di una unità con l'elemento in coda
 	 */
-	
 	private Movie[] addToArray(Movie[] M, Movie m) {
 		Movie[] returnM = new Movie[M.length+1];
 		System.arraycopy(M, 0, returnM, 0, M.length);
@@ -501,6 +542,12 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		
 		return returnArray;
 	}
+	/**
+	 * tramite il metodo getAllPeople() scorre tutti gli oggetti Person memorizzati nell'applicativo e ne estrae solo gli attori
+	 * Gli oggetti Person hanno un attributo booleano 'director' che per gli attori è impostato a false
+	 * 
+	 * @return Array di oggetti Person composto da solo attori, senza registi
+	 */
 	private Person[] getAllActors() {
 		Person[] A = new Person[0];
 		for(Person p: this.getAllPeople()) {
@@ -664,6 +711,16 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		if(actor != null) 	return this.getTeamOfREC(actor, team);
 		else				return null;
 	}
+	/**
+	 * Funzione ricorsiva che si occupa di formare l'array di Person facenti parte dello stesso team
+	 * se l'attore non è già presente nell'array lo inserisce
+	 * Visita poi nel grafo gli archi incidenti il vertice, relativo al parametro Person 'actor',
+	 * richiamando la funzione per ognuno dei vertici adiacenti ad 'actor'
+	 * 
+	 * @param actor nodo attualmente in visita
+	 * @param team array con i componeti del team
+	 * @return
+	 */
 	private Person[] getTeamOfREC(Person actor, Person[] team) {
 		if(this.notIn(actor, team)) 
 			team = this.addToArray(team, actor);
@@ -674,6 +731,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		}
 		return team;
 	}
+	/**
+	 * verifica se un determinato oggetto Person è presente nell'array dei componenti del team
+	 * 
+	 * @param actor: oggetto Person
+	 * @param team: array componenti Team
+	 * @return booleano che esprime la presenza o meno di 'actor' nell'array 'team'
+	 */
 	private boolean notIn(Person actor, Person[] team) {
 		for(Person p: team) {
 			if(p.equals(actor))
@@ -688,7 +752,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		Collaboration[] MST = new Collaboration[0];										//array delle Collaboration facenti parte del Maximum Spanning Tree
 		LinkedList<LinkedList<Person>> unionFind = new LinkedList<LinkedList<Person>>();//struttura emulante la Union Find
 		int i = 0;
-		
+		//se team è null, actor è null o l'attore non è presente nelle strutture ritorna NULL
 		if(team == null) return null;
 		if(actor == null) return null;
 		if(this.selectMethod(map, KeyType.Person, Operation.Search, this.normalizeString(actor.getName()), null) == null) return null;
@@ -697,33 +761,36 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 			unionFind.add(new LinkedList<Person>());
 			unionFind.get(k).add(team[k]);			
 		}
-		//creazione array Collaboration del team
+		//creazione array degli archi Collaboration che collegano i nodi Person del team
 		boolean isTeamEdge = false;
 		
 		for(Collaboration c: this.graph.getAllEdges()){
 			for(int j=0; j<team.length; j++) {
 				if(c.getActorA().equals(team[j]) || c.getActorB().equals(team[j])) {
-					isTeamEdge = true;
-					break;
+					isTeamEdge = true; 	//basta che uno solo dei 2 vertici dell'arco faccia parte del team, di conseguenza
+					break;				//anche l'altro capo dell'arco ne è parte (vale come è la struttura del team)	
 				}
 			}
-			
+			//aggiunga dell'arco all'array di archi facenti parti del team
 			if(isTeamEdge) 
 				teamEdges = this.addToArray(teamEdges, c);
 		}
 		//Ordinamento array Collaboration del team
 		teamEdges = sortCollabArray(teamEdges);
 		
-		// generazione MST
+		// generazione Maximum Spanning Tree
 		Collaboration c = null;
 		returnValues rValues = null;
 		
-		while(MST.length < team.length){
+		while(i < teamEdges.length && MST.length < team.length-1){ // numero archi = numero nodi - 1
 			c = teamEdges[i];
-			rValues = isMST(unionFind, c.getActorA(), c.getActorB());
+			rValues = isMST(unionFind, c.getActorA(), c.getActorB()); //verifica se l'arco fa parte del MST
 			// [0]= 1: true/else: false; [1]= indice actorA; [2]= indice actorB;
 			if(rValues.isMST) { // c fa parte del MST
 				MST =  this.addToArray(MST, c);
+				//se l'insieme di diensione minore tra quello che contiene a e b viene accodato all'altro
+				//si prendono tutti gli elementi dell'insieme più piccolo e vengono inseriti nell'altro
+				//dopo l'append l'insieme più piccolo è eliminato
 				if(unionFind.get(rValues.indexA).size() >= unionFind.get(rValues.indexB).size()) {
 					unionFind.get(rValues.indexA).addAll(unionFind.get(rValues.indexB));
 					unionFind.remove(rValues.indexB);
@@ -732,23 +799,49 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 					unionFind.remove(rValues.indexA);
 				}
 			}
-			i =1+1;
-		}
-		
+			i = i+1;
+		}		
 		return MST;
 	}
-	
+	/**
+	 * verifica che i 2 oggetti Person (vertici di un arco del grafo) non facciano parte dello stesso albero nella struttura
+	 * Union Find che viene visitata: se si verifica che i 2 vertici appartengono allo stesso insieme viene subito restituito
+	 * false. Se invece i 2 vertici non sono connessi nemmeno indirettamente, viene scandita interamente la struttura, vengono
+	 * identificati gli indici dei 2 oggetti all'interno della struttura Union Find e infine viene restituito true 
+	 * (l'oggetto arco Collaboration che collega 'a' e 'b' fa farte del Maximum Spanning Tree) 
+	 * 
+	 * @param unionFind: struttura contenente i gruppi di vertici già uniti tra loro da almeno un arco
+	 * @param a: vertice A dell'arco Collaboration
+	 * @param b: vertice B dell'arco Collaboration
+	 * @return oggetto istanza di 'returnValue'(boolean, int, int). Se l'arco fa parte del MST il return è:
+	 * 			(true, indice di Person a, indice di Person b) altrimenti ritorna false e i valori degli indici non vengono utilizzati
+	 * 			e l'esecuzione della funzione è interrotta 
+	 * 
+	 */
 	private returnValues isMST(LinkedList<LinkedList<Person>> unionFind,  Person a, Person b) {
 		returnValues rValues = new returnValues();
+		rValues.isMST = true; //impostato a false solo se l'arco non fa parte del MST
 		for(int k=0; k<unionFind.size(); k++) {
-			if(unionFind.get(k).indexOf(a) > -1 && unionFind.get(k).indexOf(b) > -1)
+			if(unionFind.get(k).indexOf(a) > -1 && unionFind.get(k).indexOf(b) > -1) { //entrambi si trovano nello stesso insieme
 				rValues.isMST = false; //return false
+				return rValues;
+			}
+			//identificazione indice di a e b all'interno della Union Find
 			if(unionFind.get(k).indexOf(a) > -1) rValues.indexA = k;
 			if(unionFind.get(k).indexOf(b) > -1) rValues.indexB = k;	
 		}
 			
-		return rValues;
+		return rValues; 
 	}
+	/**
+	 * Ordinamento dell'array tipo Collaboration in ordine decrescente secondo l'attributo Score degli archi Collaboration
+	 * viene utilizzato come algoritmo quello già implementato dell'HeapSort, tra dei migliori per il costo computazionale
+	 * Le istruzione seguono la linea dei metodi 'searchMost *' nel quale vengono implementati gli algoritmi di ordinamento
+	 * forniti dall'applicativo
+	 * 
+	 * @param edges: array di oggetti Collaboration, contiene singolarmente tutti gli archi del Team individuato
+	 * @return  array di oggetti Collaboration ordinato secondo la chiave int Score (attributo della classe Collaboration)
+	 */
 	private Collaboration[] sortCollabArray(Collaboration[] edges) {
 		int i, 
 			nEdges = edges.length;
@@ -766,6 +859,10 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		
 		return edges;
 	}
+	/**
+	 * classe creata esclusivamete per permettere un ritorno di oggetti di tipo eterogeneo nel metodo 'isMST()'
+	 *
+	 */
 	private class returnValues{
 		
 		boolean isMST;
@@ -779,7 +876,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		} 
 			
 	}
-	
+	/**
+	 * classe creata sull'impronta di SortPairIntMovie e SortPairIntPerson utilizzata per l'ordinamento di oggetti 
+	 * istanze di Collaboration secondo il suo attributo di tipo Double 'score' nel metodo sortCollabArray() 
+	 *
+	 */
 	private class SortPairDoubleCollab implements Comparable<SortPairDoubleCollab>{
 		private Double d;
 		private Collaboration c;

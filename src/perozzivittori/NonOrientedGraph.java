@@ -134,10 +134,7 @@ public class NonOrientedGraph implements Graph {
 				adjacentList.remove(edge.getActorA());
 				toRemove[0] = true;
 			}
-		/*	for(int i=0; i<edgeList.size(); i++) {
-				if(edgeList.get(i).equals(edge))
-					this.adjacentList.get(edge.getActorA()).remove(i);					
-			}*/
+			
 			edgeList = this.adjacentList.get(edge.getActorB());
 			if(edgeList.size() > 1)
 				edgeList.remove(edgeList.indexOf(edge));
@@ -145,10 +142,6 @@ public class NonOrientedGraph implements Graph {
 				adjacentList.remove(edge.getActorB());
 				toRemove[1] = true;
 			}
-		/*	for(int i=0; i<edgeList.size(); i++) {
-				if(edgeList.get(i).equals(edge))
-					this.adjacentList.get(edge.getActorB()).remove(i);					
-			}*/
 		}
 		return toRemove;
 	}
@@ -157,8 +150,9 @@ public class NonOrientedGraph implements Graph {
 		boolean[] toRemove = {false, false};
 		if(!adjacentList.isEmpty() && deletedMovie != null && ActorA != null && ActorB != null) {
 			List<Collaboration> edgesList = adjacentList.get(ActorA);
-			
-			for (Collaboration edge: edgesList) {
+
+			for (int i=0; i<edgesList.size(); i++) {
+				Collaboration edge = edgesList.get(i);
 				if(opposite(ActorA, edge).equals(ActorB)) {
 					// Il suo simmetrico
 					//Collaboration symEdge = adjacentList.get(ActorB).get(adjacentList.get(ActorB).indexOf(edge));
