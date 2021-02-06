@@ -48,17 +48,9 @@ public class BTree implements Dizionario {
 		height = 0;
     }
 	
-	/**
-	 * Metodo pubblico per la ricerca del record
-	 * 
-	 * @param  k titolo/nome da ricercare
-	 * 
-	 * @return record con chiave k se esistente, null altrimenti
-	 */
-	
 	@Override
-	public Object search(String k) {
-		if (k != null) return search(root, k, height);
+	public Object search(String key) {
+		if (key != null) return search(root, key, height);
 		return null;
 	}
 	
@@ -84,14 +76,8 @@ public class BTree implements Dizionario {
 		}
 	}
 
-	/**
-	 * Metodo pubblico per l'inserimento del record
-	 * 
-	 * @param k il titolo/nome 
-	 * @param e il record
-	 */
-	public void insert(String k, Object e) {
-		Node tmp = insert(root, k, e, height);
+	public void insert(String key, Object e) {
+		Node tmp = insert(root, key, e, height);
 		if (tmp == null) return;
 		
 		// Split sulla Radice
@@ -177,15 +163,10 @@ public class BTree implements Dizionario {
 		return tmp;
 	}
 	
-	/**
-	 * Metodo pubblico per la cancellazione di un record
-	 * 
-	 * @param k la chiave da eliminare
-	 * 
-	 * @return il record eliminato se esistente, null altrimenti
-	 */
-    public Object delete(String k) {
-    	return delete(null, 0, root, k, height);
+	
+    public Object delete(String key) {
+    	if (key != null) return delete(null, 0, root, key, height);
+    	return null;
     }
     
     /**
