@@ -75,7 +75,14 @@ public class NonOrientedGraph implements Graph {
 		}
 		return opposite;
 	}
-
+	/**
+	 * Verifica se 2 vertici sono adiacenti (fanno parte dello stesso arco Collaboration)
+	 * l'arco può essere (vertexA, vertexB) o viceversa, (vertexB, vertexA)
+	 * 
+	 * @param vertexA primo vertice
+	 * @param vertexB secondo vertice
+	 * @return true se i 2 vertici sono adiacenti, false altrimenti
+	 */
 	@Override
 	public boolean areAdjacent(Person vertexA, Person vertexB) {
 		List<Collaboration> edgesList = null;
@@ -88,13 +95,23 @@ public class NonOrientedGraph implements Graph {
 		}
 		return false;
 	}
-
+	/**
+	 * Aggiunge un nuovo vertice al grafo e istanzia il suo insieme di archi
+	 * 
+	 * @param vertex vertice da aggiungere all'arco
+	 */
 	@Override
 	public void addVertex(Person vertex) {
 		if(vertex != null)
 			this.adjacentList.put(vertex, new LinkedList<Collaboration>());
 	}
-
+	/**
+	 * Aggiunge un nuovo arco al grafo, crea l'arco e aggiunge la stessa istanza dell'oggetto Collaboration
+	 * a entrambi i vertici dell'arco
+	 * 
+	 * @param vertexA vertice dell'arco
+	 * @param vertexB vertice dell'arco
+	 */
 	@Override
 	public void addEdge(Person vertexA, Person vertexB) {
 		if( vertexA != null && vertexB != null) {
@@ -104,7 +121,11 @@ public class NonOrientedGraph implements Graph {
 			this.adjacentList.get(vertexB).add(0,c);
 		}
 	}
-
+	/**
+	 * 
+	 * 
+	 * @param vertex
+	 */
 	@Override
 	public void removeVertex(Person vertex) {
 		if(!adjacentList.isEmpty() && vertex != null) {
@@ -177,7 +198,13 @@ public class NonOrientedGraph implements Graph {
 		
 		return toRemove;
 	}
-	
+	/**
+	 * Aggiunge un Movie in un determinato arco (tipo Collaboration)
+	 * 
+	 * @param movie Movie da inserire nella lista dell'arco Collaboration
+	 * @param actorA vertice dell'arco
+	 * @param actorB vertice dell'arco
+	 */
 	public void addMovieInEdge(Movie movie, Person actorA, Person actorB) {
 		if( movie != null && actorA != null && actorB != null) {
 			// se la Collaboration esiste, aggiungo il film sia su A che su B
@@ -186,21 +213,22 @@ public class NonOrientedGraph implements Graph {
 				for (Collaboration edge: edgesList) {
 					if(opposite(actorA, edge).equals(actorB)) {
 						
-						//Collaboration symEdge = adjacentList.get(actorB).get(adjacentList.get(actorB).indexOf(edge));
-						//aggiungo il film nella lista di entrambi
 						edge.addMovie(movie);
-						//symEdge.addMovie(movie);
 						return;
 					}	
 				}
 			}
+			//se non esiste già un arco con i 2 vertici passati come parametro viene creato e poi aggiunto l'oggetto Movie
 			addEdge(actorA, actorB);
 			//new Collaboration aggiunta in TESTA -> get(0)
 			this.adjacentList.get(actorA).get(0).addMovie(movie);
-			//this.adjacentList.get(actorB).get(0).addMovie(movie);
 		}
 	}
-	
+	/**
+	 * Restituisce array contenente tutti gli archi presenti nel grafo
+	 * 
+	 * @return array Collaboration[]
+	 */
 	public Collaboration[] getAllEdges() {
 		List<Collaboration> listC = new LinkedList<Collaboration>();
 		if(adjacentList.isEmpty()) return null;
