@@ -35,7 +35,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 	private ArrayOrdinato ArrPerson;
 	private BTree BTMovie;
 	private BTree BTPerson;
-	//TODO ne definiamo l'istanza col tipo adatto nei metodi in cui va usato (searchMost)
 	/**
 	 * struttura dati rappresentante il grafo di attori
 	 */
@@ -63,7 +62,6 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		this.map = m;
 		this.ArrMovie 	= new ArrayOrdinato();
 		this.ArrPerson 	= new ArrayOrdinato();
-		//TODO String come tipo Comparable
 		this.BTMovie 	= new BTree();
 		this.BTPerson 	= new BTree();
 		this.graph 		= new NonOrientedGraph();
@@ -76,12 +74,10 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		this.ArrPerson 	= null;
 		this.BTMovie 	= null;
 		this.BTPerson 	= null;
-		//this.sortA		= null;
 		this.graph		= null;
 	}
 	
 	/* MovidaCore Methods **/
-	//TODO String come tipo Comparable
 	/**
 	 * metodo che permette di operare sulle strutture dati scegliendo integrandole 
 	 * 
@@ -342,6 +338,11 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		return true;
 	}
 	
+	/**
+	 * Cancellazione di un record Person
+	 * 
+	 * @param name il nome, normalizzato diventa la chiave
+	 */
 	private void deletePersonByName(String name) {
 		Object deletedObjA = selectMethod(MapImplementation.ArrayOrdinato, KeyType.Person, Operation.Delete, this.normalizeString(name), null);
 		Object deletedObjB = selectMethod(MapImplementation.BTree, KeyType.Person, Operation.Delete, this.normalizeString(name), null); 

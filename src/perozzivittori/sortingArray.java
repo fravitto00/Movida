@@ -13,12 +13,6 @@ public class sortingArray<T extends Comparable<T>> {
 		return this.sortArray;
 	}
 	
-	/*
-	public void setA(T[] a) {
-		this.sortArray = a;
-	}
-	*/
-	
 	public void sort(SortingAlgorithm alg) {
 		switch (alg) {
 			case SelectionSort:	selectionSort();

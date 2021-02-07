@@ -169,7 +169,7 @@ public class NonOrientedGraph implements Graph {
 				Collaboration edge = edgesList.get(i);
 				if(opposite(ActorA, edge).equals(ActorB)) {
 					if(edge.getNumMovies() > 1)
-						edge.deleteMovie(deletedMovie);	// La Collaboration ha pi� di un Movie, quindi viene solamente aggiornata
+						edge.deleteMovie(deletedMovie);	// La Collaboration ha più di un Movie, quindi viene solamente aggiornata
 					else
 						toRemove = removeEdge(edge);	// La Collaboration ha un solo Movie, quindi viene eliminata
 				}	
