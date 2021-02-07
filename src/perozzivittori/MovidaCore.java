@@ -468,7 +468,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 
 	@Override
 	public Movie[] searchMostVotedMovies(Integer N) {
-		Movie[] movies = castToMovie(toArray(KeyType.Movie));
+		Movie[] movies = this.getAllMovies();
 		int nMovies = movies.length;
 		SortPairIntMovie[] votes = new SortPairIntMovie[nMovies];
 		
@@ -484,7 +484,7 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 
 	@Override
 	public Movie[] searchMostRecentMovies(Integer N) {
-		Movie[] movies = castToMovie(toArray(KeyType.Movie));
+		Movie[] movies = this.getAllMovies();
 		int nMovies = movies.length;
 		SortPairIntMovie[] years = new SortPairIntMovie[nMovies];
 		
@@ -500,9 +500,9 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 
 	@Override
 	public Person[] searchMostActiveActors(Integer N) {
-		Movie[] movies = this.getAllMovies(); //castToMovie(toArray(KeyType.Movie));
+		Movie[] movies = this.getAllMovies();
 		int nMovies = movies.length;
-		Person[] people = this.getAllActors(); //castToPerson(toArray(KeyType.Person));
+		Person[] people = this.getAllActors();
 		int nPeople = people.length;
 		
 		
@@ -516,12 +516,15 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		
 		for(int i=0; i < nMovies; i++) {
 			cast = movies[i].getCast();
-			//Iterates through movie's cast
+			
+			// Itera tra cast del Movie
 			for(int j=0; j < cast.length; j++) {
-				//Iterates through actors
+				
+				// Itera tra gli attori
 				for(int k=0; k < nPeople; k++) {
-					//checks name instead of intere object for bo (optimization?)
-					if (cast[j].getName().compareTo(people[k].getName()) == 0)  starredCount[k].increase();
+
+					// Confronto effettuato sul nome dell'attore (metodo equals sovrascritto in Person)
+					if (cast[j].equals(people[k])) starredCount[k].increase();
 				}
 			}
 		}
@@ -531,13 +534,17 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		countersToSort.sort(this.alg);
 		starredCount = countersToSort.getA();
 		
-		//return buildArray(N, nMovies, countersToSort.getA());
+		// buildArray(N, nMovies, SortPairIntPerson)
 		Person[] returnArray = null;
-		if(nPeople >= N)	returnArray = new Person[N];
-		else				{returnArray = new Person[nPeople]; N = nPeople;}
+		if(nPeople >= N)
+			returnArray = new Person[N];
+		else {
+			returnArray = new Person[nPeople];
+			N = nPeople;
+		}
 		
 		
-		//ordine decrescente (mostActive)
+		// Ordine decrescente (mostActive)
 		for(int i=0; i < N; i++)
 			returnArray[i] = starredCount[nPeople-1-i].getPerson();
 		
