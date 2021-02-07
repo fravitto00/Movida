@@ -27,3 +27,6 @@ Ogni vertice ha una lista degli archi ad esso adiacenti, perciò uno stesso arco
 
 ## Maximum Spanning Tree
 La questione era quella di emulare una struttura Union Find per controllare che 2 nodi del grafo, collegati dall'arco in atto di verifica, non appartenessero già allo stesso albero (facendo quindi parte di insiemi diversi). La struttura è stata costruita come una lista di liste, dove le liste interne rappresentano gli insiemi di vertici del grafo già collegati tra loro, in modo diretto o indiretto. In avvio del suddetto metodo, ogni nodo appartiene a un insieme contenente solo se stesso, e in corso di esecuzione queste liste interne vanno fondendosi fino ad arrivare ad un unico insieme contenente tutti i nodi interpellati. 
+
+## Modifica Classi movida.commons
+Le uniche due classi a cui sono state apportate modifiche sono Collaboration e Person: nella prima sono stati aggiunti metodi per l'aggiunta, la cancellazione di un Movie e per la restituzione del numero di Movie contenuti; nella seconda � stata effettuata la sovrascrittura del metodo equals di Object, e con s� hashCode, per effettuare confronti corretti tra oggetti con gli stessi valori ma hashCode diversi, dati da una nuova istanziazione dell'oggetto da confrontare con quelli presenti nelle strutture dati/grafo.
