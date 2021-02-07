@@ -1,7 +1,7 @@
 # Movida
 ## Gruppo
 Il gruppo di lavoro è formato da:
-- Perozzi Marco | (email) | (matricola)
+- Perozzi Marco | (marco.perozzi2@studio.unibo.it) | (0000933854)
 - Vittori Francesco | francesco.vittori5@studio.unibo.it | 0000923487
 ## Strutture Dati
 Abbiamo iniziato lo sviluppo delle strutture dati utilizzando Java Generics e quindi l'interfaccia Comparable.
@@ -12,9 +12,7 @@ della memoria per degli array.
 
 Per quanto riguarda, invece, il tipo di dato dell'elemento abbiamo optato per la scelta "generica" del tipo Object.
 
-Le due strutture dati, BTree e Array Ordinato, vengono aggiornate contemporaneamente durante il run-time, in caso di 
-operazioni di aggiunta o cancellazione di record. Le altre operazioni vengono effettuate sulla struttura dati specificata
-dall'attributo privato di tipo MapImplementation, il cui valore iniziale viene inserito nel costruttore e modificato tramite setMap().
+Le due strutture dati, BTree e Array Ordinato, vengono aggiornate contemporaneamente durante il run-time, ... 
 
 ## Estensione Grafo
 Abbiamo implementato il grafo tramite lista di adiacenza, implementata tramite un HashMap con chiavi di tipo Person (attori) e
