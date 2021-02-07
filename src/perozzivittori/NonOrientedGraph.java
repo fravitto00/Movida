@@ -124,10 +124,11 @@ public class NonOrientedGraph implements Graph {
 
 	@Override
 	public boolean[] removeEdge(Collaboration edge) {
+		// Valori booleani che indicano la rimozione o meno dell'attore da movida
 		boolean[] toRemove = {false, false};
 		if(!adjacentList.isEmpty() && edge != null) {
 			List<Collaboration> edgeList = null;
-			//valori booleani che indicano la rimozione o meno dell'attore da movida 
+			
 			edgeList = this.adjacentList.get(edge.getActorA());
 			if(edgeList.size() > 1)
 				edgeList.remove(edgeList.indexOf(edge));

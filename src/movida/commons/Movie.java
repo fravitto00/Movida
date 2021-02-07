@@ -15,7 +15,7 @@ package movida.commons;
  * Un film ? identificato in modo univoco dal titolo 
  * case-insensitive, senza spazi iniziali e finali, senza spazi doppi. 
  * 
- * La classe pu˜ essere modicata o estesa ma deve implementare tutti i metodi getter
+ * La classe puï¿½ essere modicata o estesa ma deve implementare tutti i metodi getter
  * per recupare le informazioni caratterizzanti di un film.
  * 
  */
@@ -55,6 +55,4 @@ public class Movie {
 	public Person getDirector() {
 		return this.director;
 	}
-	
-	
 }
