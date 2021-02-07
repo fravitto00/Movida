@@ -328,11 +328,13 @@ public class MovidaCore implements IMovidaDB, IMovidaConfig, IMovidaSearch, IMov
 		Movie deletedMovie = (Movie) deletedObjA;
 		Person[] cast = deletedMovie.getCast();
  
-		//Per ogni attore, elimina gli archi che vanno verso gli attori successivi (l'implementazione di removeEdge evita la simmetria dell'operazione verso i precedenti)
+		//Per ogni attore, elimina il Movie dagli archi che vanno verso gli attori successivi
 		boolean[] toRemove;
 		for(int i=0; i < cast.length-1; i++)
 			for(int j=i+1; j < cast.length; j++) {
 				toRemove = graph.removeMovieFromEdge(deletedMovie, cast[i], cast[j]);
+				
+				// Necessità di rimuovere gli attori che non prendono parte in nessun Movie a causa della cancellazione
 				if(toRemove[0]) deletePersonByName(cast[i].getName());
 				if(toRemove[1]) deletePersonByName(cast[j].getName());
 			}
