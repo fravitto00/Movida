@@ -8,11 +8,7 @@ Il gruppo di lavoro è formato da:
 Lo sviluppo dell'applicativo è avvenuto su sistema operativo *Windows*. L'IDE scelto per la scrittura del codice è *Eclipse*. La versione di Java utilizzata è *jdk-9.0.1* e la codifica dei caratteri è *UTF-8* (inclusione di tutti i caratteri accentati nella normalizzazione delle stringhe)
 
 ## Strutture Dati
-Abbiamo iniziato lo sviluppo delle strutture dati utilizzando Java Generics e quindi l'interfaccia Comparable.
-Notando però che nei metodi dalle interfacce, implementati in MovidaCore, title e name fossero di tipo String
-abbiamo optato per l'utilizzo di questo tipo. In aggiunta, all'interno del BTree vengono utilizzati degli array
-per i record e i figli di ciascun nodo, per efficienza. Un tipo di dato Generics non avrebbe permesso l'allocazione
-della memoria per degli array.
+Abbiamo iniziato lo sviluppo delle strutture dati utilizzando Java Generics e quindi l'interfaccia Comparable. Notando però che nei metodi dalle interfacce, implementati in MovidaCore, title e name fossero di tipo String abbiamo optato per l'utilizzo di questo tipo. In aggiunta, all'interno del BTree vengono utilizzati degli array per i record e i figli di ciascun nodo, per efficienza. Un tipo di dato Generics non avrebbe permesso l'allocazione della memoria per degli array.
 
 Per quanto riguarda, invece, il tipo di dato dell'elemento abbiamo optato per la scelta "generica" del tipo Object.
 
@@ -25,8 +21,7 @@ Inoltre, implementano l'interfaccia Dizionario che definisce i tre metodi di: ri
 Gli algoritmi di ordinamento sono stati implementati come metodi di una classe dedicata sortingArray, di cui un'istanza viene creata e istanziata al bisogno nei metodi di MovidaCore, indicando il tipo di dato che l'array deve contenere e riordinare, tramite Generics. L'algoritmo utilizzato è definito dal costruttore o dal metodo setSort.
 
 ## Estensione Grafo
-Abbiamo implementato il grafo tramite lista di adiacenza, implementata tramite un HashMap con chiavi di tipo Person (attori) e
-come elementi liste di tipo Collaboration (classe utilizzata come archi).
+Abbiamo implementato il grafo tramite lista di adiacenza, implementata tramite un HashMap con chiavi di tipo Person (attori) e come elementi liste di tipo Collaboration (classe utilizzata come archi).
 
 ## Maximum Spanning Tree
 La questione era quella di emulare una struttura Union Find per controllare che 2 nodi del grafo, collegati dall'arco in atto di verifica, non appartenessero già allo stesso albero (facendo quindi parte di insiemi diversi). La struttura è stata costruita come una lista di liste, dove le liste interne rappresentano gli insiemi di vertici del grafo già collegati tra loro, in modo diretto o indiretto. In avvio del suddetto metodo, ogni nodo appartiene a un insieme contenente solo se stesso, e in corso di esecuzione queste liste interne vanno fondendosi fino ad arrivare ad un unico insieme contenente tutti i nodi interpellati. 
