@@ -5,8 +5,8 @@ Il gruppo di lavoro é formato da:
 - Perozzi Marco | marco.perozzi2@studio.unibo.it | 0000933854
 - Vittori Francesco | francesco.vittori5@studio.unibo.it | 0000923487
 
-## Ambito di lavoro
-Lo sviluppo dell'applicativo é avvenuto su sistema operativo *Windows*. L'IDE scelto per la scrittura del codice é *Eclipse*. La versione di Java utilizzata é *jdk-9.0.1* e la codifica dei caratteri é *UTF-8* (inclusione di tutti i caratteri accentati nella normalizzazione delle stringhe)
+## Ambiente di lavoro
+Lo sviluppo dell'applicativo é avvenuto su sistema operativo *Windows*. L'IDE scelto per la scrittura del codice é *Eclipse*, perciò oltre i file sorgente sono inclusi anche quelli generati dall'ambiente di sviluppo per la corretta visualizzazione e il building del progetto. La versione di Java utilizzata é *jdk-9.0.1* e la codifica dei caratteri é *UTF-8* (inclusione di tutti i caratteri accentati nella normalizzazione delle stringhe)
 
 ## Strutture Dati
 Abbiamo iniziato lo sviluppo delle strutture dati utilizzando Java Generics e quindi l'interfaccia Comparable. Notando però che nei metodi dalle interfacce, implementati in MovidaCore, title e name fossero di tipo String abbiamo optato per l'utilizzo di questo tipo. In aggiunta, all'interno del BTree vengono utilizzati degli array per i record e i figli di ciascun nodo, per efficienza. Un tipo di dato Generics non avrebbe permesso l'allocazione della memoria per degli array.
