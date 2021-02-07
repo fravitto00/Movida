@@ -23,5 +23,7 @@ Gli algoritmi di ordinamento sono stati implementati come metodi di una classe d
 ## Estensione Grafo
 Abbiamo implementato il grafo tramite lista di adiacenza, implementata tramite un HashMap con chiavi di tipo Person (attori) e come elementi liste di tipo Collaboration (classe utilizzata come archi).
 
+Ogni vertice ha una lista degli archi ad esso adiacenti, perciò uno stesso arco è inserito nella lista di entrambi i vertici che collega. Quando questo spigolo viene creato è istanziato un oggetto Collaboration e la stessa istanza è aggiunta a entrambe le liste. In questo modo ogni operazione eseguita su un arco è duplicata anche per l'istanza simmetrica, memorizzata nella lista del vertice opposto.
+
 ## Maximum Spanning Tree
 La questione era quella di emulare una struttura Union Find per controllare che 2 nodi del grafo, collegati dall'arco in atto di verifica, non appartenessero già allo stesso albero (facendo quindi parte di insiemi diversi). La struttura è stata costruita come una lista di liste, dove le liste interne rappresentano gli insiemi di vertici del grafo già collegati tra loro, in modo diretto o indiretto. In avvio del suddetto metodo, ogni nodo appartiene a un insieme contenente solo se stesso, e in corso di esecuzione queste liste interne vanno fondendosi fino ad arrivare ad un unico insieme contenente tutti i nodi interpellati. 
