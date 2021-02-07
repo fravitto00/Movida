@@ -12,6 +12,8 @@ della memoria per degli array.
 
 Per quanto riguarda, invece, il tipo di dato dell'elemento abbiamo optato per la scelta "generica" del tipo Object.
 
+Le due strutture dati, BTree e Array Ordinato, vengono aggiornate contemporaneamente durante il run-time, ... 
+
 ## Estensione Grafo
 Abbiamo implementato il grafo tramite lista di adiacenza, implementata tramite un HashMap con chiavi di tipo Person (attori) e
 come elementi liste di tipo Collaboration (classe utilizzata come archi).
