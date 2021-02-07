@@ -16,7 +16,7 @@ della memoria per degli array.
 
 Per quanto riguarda, invece, il tipo di dato dell'elemento abbiamo optato per la scelta "generica" del tipo Object.
 
-Le due strutture dati, BTree e Array Ordinato, vengono aggiornate contemporaneamente durante il run-time, nella fase di upload dei dati dal file.
+Le due strutture dati, BTree e Array Ordinato, vengono aggiornate contemporaneamente durante il run-time, per quanto riguarda l'aggiunta o la cancellazione di record. Per tutte le altre operazioni viene utilizzata la struttura scelta tramite costruttore o setMap. (nella fase di upload dei dati dal file.)
 
 **Array Ordinato**: la scelta è stata quella di utilizzare come struttura un array statico, con lo svantaggio di doverlo ridimensionare ad ogni operazione di modifica: insert, delete. L'alternativa era implementare la struttura come ArrayList. Quest'ultimo permette l'alterazione dinamica della sua struttura ma allo stesso tempo alloca più spazio di quello realmente necessario. Il vantaggio della struttura statica dell'array si misura in termini di allocazione in memoria 
 
