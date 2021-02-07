@@ -416,28 +416,4 @@ public class BTree implements Dizionario {
     		if(v.c > i) buildLL(ll, v.children[i]);
     	}
     }
-    
-    /**
-     * Stampa ricorsiva del BTree per debug
-     */
-    /*
-    public void printTree() {
-    	printTree(root, height);
-    }
-    
-    private void printTree(Node v, int ht) {
-    	if (v != null) {
-    		int i;
-    		for(i=0; i < v.m; i++) {
-    			if(v.c > i) printTree(v.children[i], ht - 1);
-    			Object o = v.pairs[i].elem;
-    			if (o instanceof Person) System.out.println(((Person) o).getName()); 
-    			if (o instanceof Movie) System.out.println(((Movie) o).getTitle());
-    		}
-    		
-    		//last child
-    		if(v.c > i) printTree(v.children[i], ht - 1);
-    	}
-    }
-    */
 }
